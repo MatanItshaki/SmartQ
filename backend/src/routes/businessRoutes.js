@@ -1,9 +1,14 @@
 import express from "express";
-import { getBusinesses, createBusiness } from "../controllers/businessController.js";
+import {
+  getAllBusinesses,
+  createBusiness,
+  getBusinessById,
+} from "../controllers/businessController.js";
 
 const router = express.Router();
 
-router.get("/", getBusinesses);
+router.get("/", getAllBusinesses);
 router.post("/", createBusiness);
+router.get("/:id", getBusinessById);
 
 export default router;
