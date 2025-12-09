@@ -1,15 +1,29 @@
 import mongoose from "mongoose";
 
-const employeeSchema = new mongoose.Schema(
+const { Schema, model } = mongoose;
+
+const employeeSchema = new Schema(
   {
-    name: { type: String, required: true },
     business: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Business",
-      required: true
-    }
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      trim: true,
+      lowercase: true,
+    },
+    phone: {
+      type: String,
+      trim: true,
+    },
   },
-  { timestamps: true }
 );
 
-export default mongoose.model("Employee", employeeSchema);
+export default model("Employee", employeeSchema);

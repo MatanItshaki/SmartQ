@@ -9,6 +9,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.send("SmartQ API is running!");
+});
+
 // Routes
 app.use("/api/business", businessRoutes);
 app.use("/api/services", serviceRoutes);

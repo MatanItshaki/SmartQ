@@ -1,12 +1,27 @@
 import mongoose from "mongoose";
 
-const businessSchema = new mongoose.Schema(
+const { Schema, model } = mongoose;
+
+const businessSchema = new Schema(
   {
-    name: { type: String, required: true },
-    address: String,
-    phone: String
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    niche: {
+      type: String,
+      trim: true,
+    },
+    address: {
+      type: String,
+      trim: true,
+    },
+    phone: {
+      type: String,
+      trim: true,
+    },
   },
-  { timestamps: true }
 );
 
-export default mongoose.model("Business", businessSchema);
+export default model("Business", businessSchema);
