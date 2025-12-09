@@ -1,19 +1,42 @@
 import mongoose from "mongoose";
 
-const appointmentSchema = new mongoose.Schema(
+const { Schema, model } = mongoose;
+
+const appointmentSchema = new Schema(
   {
-    client: { type: mongoose.Schema.Types.ObjectId, ref: "Client", required: true },
-    employee: { type: mongoose.Schema.Types.ObjectId, ref: "Employee", required: true },
-    service: { type: mongoose.Schema.Types.ObjectId, ref: "Service", required: true },
-    startTime: { type: Date, required: true },
-    endTime: { type: Date, required: true },
+    client: {
+      type: Schema.Types.ObjectId,
+      ref: "Client",
+      required: true,
+    },
+    employee: {
+      type: Schema.Types.ObjectId,
+      ref: "Employee",
+      required: true,
+    },
+    service: {
+      type: Schema.Types.ObjectId,
+      ref: "Service",
+      required: true,
+    },
+    startTime: {
+      type: Date,
+      required: true,
+    },
+    endTime: {
+      type: Date,
+      required: true,
+    },
     status: {
       type: String,
-      enum: ["booked", "cancelled", "completed"],
-      default: "booked"
-    }
+      enum: ["scheduled", "cancelled", "completed"],
+      default: "scheduled",
+    },
+    notes: {
+      type: String,
+      trim: true,
+    },
   },
-  { timestamps: true }
 );
 
-export default mongoose.model("Appointment", appointmentSchema);
+export default model("Appointment", appointmentSchema);
