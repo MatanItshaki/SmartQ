@@ -1,14 +1,23 @@
 import express from "express";
 import {
-  getAllBusinesses,
   createBusiness,
+  getAllBusinesses,
   getBusinessById,
+  updateBusiness,
+  deleteBusiness,
 } from "../controllers/businessController.js";
 
 const router = express.Router();
 
-router.get("/", getAllBusinesses);
-router.post("/", createBusiness);
-router.get("/:id", getBusinessById);
+// /api/business
+router.route("/")
+  .get(getAllBusinesses)
+  .post(createBusiness);
+
+// /api/business/:id
+router.route("/:id")
+  .get(getBusinessById)
+  .put(updateBusiness)
+  .delete(deleteBusiness);
 
 export default router;
