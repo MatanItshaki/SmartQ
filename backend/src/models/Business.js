@@ -2,10 +2,9 @@ import mongoose from "mongoose";
 
 const businessSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true },
-    niche: { type: String, trim: true }, // barber, clinic, gym...
-    address: { type: String, trim: true },
-    phone: { type: String, trim: true }
+    name: { type: String, required: true },
+    address: String,
+    phone: String
   },
   { timestamps: true }
 );
