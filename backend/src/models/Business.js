@@ -22,6 +22,9 @@ const businessSchema = new Schema(
       trim: true,
     },
   },
+  { timestamps: true }
 );
+
+businessSchema.index({ name: 1 });
 
 export default model("Business", businessSchema);

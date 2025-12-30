@@ -6,7 +6,7 @@ const employeeServiceSchema = new Schema(
   {
     employee: {
       type: Schema.Types.ObjectId,
-      ref: "Employee",
+      ref: "User",
       required: true,
     },
     service: {

@@ -1,118 +1,91 @@
 import Business from "../models/Business.js";
 
-// @desc    Create new business
-// @route   POST /api/business
-// @access  Public (for now)
+// helper - build update object safely (no undefined overwrite)
+const pickDefined = (obj) =>
+  Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== undefined));
+
 export const createBusiness = async (req, res, next) => {
   try {
     const { name, niche, address, phone } = req.body;
 
-    if (!name) {
-      const error = new Error("Business name is required");
-      error.statusCode = 400;
-      throw error;
-    }
+    if (!name) return res.status(400).json({ message: "Business name is required" });
 
     const business = await Business.create({
-      name,
-      niche,
-      address,
-      phone,
+      name: name.trim(),
+      niche: niche?.trim(),
+      address: address?.trim(),
+      phone: phone?.trim(),
     });
 
-    res.status(201).json({
-      success: true,
-      data: business,
-    });
+    return res.status(201).json({ success: true, data: business });
   } catch (err) {
     next(err);
   }
 };
 
-// @desc    Get all businesses
-// @route   GET /api/business
-// @access  Public
 export const getAllBusinesses = async (req, res, next) => {
   try {
-    const businesses = await Business.find();
-
-    res.json({
-      success: true,
-      count: businesses.length,
-      data: businesses,
-    });
+    const businesses = await Business.find().lean();
+    return res.json({ success: true, count: businesses.length, data: businesses });
   } catch (err) {
     next(err);
   }
 };
 
-// @desc    Get single business by id
-// @route   GET /api/business/:id
-// @access  Public
 export const getBusinessById = async (req, res, next) => {
   try {
-    const business = await Business.findById(req.params.id);
+    const business = await Business.findById(req.params.id).lean();
+    if (!business) return res.status(404).json({ message: "Business not found" });
 
-    if (!business) {
-      const error = new Error("Business not found");
-      error.statusCode = 404;
-      throw error;
-    }
-
-    res.json({
-      success: true,
-      data: business,
-    });
+    return res.json({ success: true, data: business });
   } catch (err) {
     next(err);
   }
 };
 
-// @desc    Update business
-// @route   PUT /api/business/:id
-// @access  Public (for now)
 export const updateBusiness = async (req, res, next) => {
   try {
-    const { name, niche, address, phone } = req.body;
+    const { id } = req.params;
 
-    const business = await Business.findByIdAndUpdate(
-      req.params.id,
-      { name, niche, address, phone },
-      { new: true, runValidators: true }
-    );
-
-    if (!business) {
-      const error = new Error("Business not found");
-      error.statusCode = 404;
-      throw error;
+    // ✅ Authorization:
+    // business user can update only his own business
+    if (req.user?.role === "business" && String(req.user.businessId) !== String(id)) {
+      return res.status(403).json({ message: "Forbidden" });
     }
 
-    res.json({
-      success: true,
-      data: business,
+    const updates = pickDefined({
+      name: req.body.name?.trim(),
+      niche: req.body.niche?.trim(),
+      address: req.body.address?.trim(),
+      phone: req.body.phone?.trim(),
     });
+
+    const business = await Business.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!business) return res.status(404).json({ message: "Business not found" });
+
+    return res.json({ success: true, data: business });
   } catch (err) {
     next(err);
   }
 };
 
-// @desc    Delete business
-// @route   DELETE /api/business/:id
-// @access  Public (for now)
 export const deleteBusiness = async (req, res, next) => {
   try {
-    const business = await Business.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
 
-    if (!business) {
-      const error = new Error("Business not found");
-      error.statusCode = 404;
-      throw error;
+    // ✅ Authorization:
+    if (req.user?.role === "business" && String(req.user.businessId) !== String(id)) {
+      return res.status(403).json({ message: "Forbidden" });
     }
 
-    res.json({
-      success: true,
-      message: "Business deleted",
-    });
+    const business = await Business.findByIdAndDelete(id);
+    if (!business) return res.status(404).json({ message: "Business not found" });
+
+    return res.json({ success: true, message: "Business deleted" });
   } catch (err) {
     next(err);
   }
