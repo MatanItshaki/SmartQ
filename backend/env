@@ -1,3 +1,0 @@
-MONGO_URI=mongodb+srv://admin:admin2024@cluster0.lywpoc0.mongodb.net/
-Port=5000
-NODE_ENV=development
