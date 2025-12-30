@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import Client from "../models/Client.js";
 import Employee from "../models/Employee.js";
-import BusinessUser from "../models/BusinessUser.js"; // תיצור את הקובץ הזה כמו שעשינו
+import BusinessOwner from "../models/BusinessOwner.js"; // תיצור את הקובץ הזה כמו שעשינו
 
 const signToken = (user) => {
   if (!process.env.JWT_SECRET) {
@@ -171,7 +171,7 @@ export const registerEmployee = async (req, res, next) => {
   }
 };
 
-export const registerBusinessUser = async (req, res, next) => {
+export const registerBusinessOwner = async (req, res, next) => {
   try {
     const { name, email, password, phone, businessId } = req.body;
 
@@ -185,7 +185,7 @@ export const registerBusinessUser = async (req, res, next) => {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const businessUser = await BusinessUser.create({
+    const businessOwner = await BusinessOwner.create({
       name: name.trim(),
       email: normalizedEmail,
       phone: phone?.trim() ?? "",
@@ -193,7 +193,7 @@ export const registerBusinessUser = async (req, res, next) => {
       businessId,
     });
 
-    return sendAuthResponse(res, businessUser, 201);
+    return sendAuthResponse(res, businessOwner, 201);
   } catch (err) {
     return next(err);
   }

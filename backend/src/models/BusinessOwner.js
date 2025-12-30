@@ -1,7 +1,7 @@
 import User from "./User.js";
 import mongoose from "mongoose";
 
-const BusinessUserSchema = new mongoose.Schema({
+const businessOwnerSchema = new mongoose.Schema({
   businessId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Business",
@@ -11,6 +11,6 @@ const BusinessUserSchema = new mongoose.Schema({
   // permissions: [{ type: String }]
 });
 
-BusinessUserSchema.index({ businessId: 1 });
+businessOwnerSchema.index({ businessId: 1 });
 
-export default User.discriminator("business", BusinessUserSchema);
+export default User.discriminator("business", businessOwnerSchema);

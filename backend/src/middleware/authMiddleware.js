@@ -4,15 +4,12 @@ import jwt from "jsonwebtoken";
 export const protect = (req, res, next) => {
   let token;
 
-  // 1) Authorization header
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer ")
-  ) {
+  // Authorization: Bearer <token>
+  if (req.headers.authorization?.startsWith("Bearer ")) {
     token = req.headers.authorization.split(" ")[1];
   }
 
-  // 2) Cookie fallback (optional)
+  // optional: cookie support
   if (!token && req.cookies?.token) {
     token = req.cookies.token;
   }
@@ -21,16 +18,12 @@ export const protect = (req, res, next) => {
     return res.status(401).json({ message: "Not authorized, no token" });
   }
 
-  if (!process.env.JWT_SECRET) {
-    return res.status(500).json({ message: "JWT_SECRET not configured" });
-  }
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     req.user = {
       id: decoded.id,
-      role: decoded.role,           // "client" | "employee" | "business" | "admin"
+      role: decoded.role,
       businessId: decoded.businessId ?? null,
     };
 
@@ -38,4 +31,21 @@ export const protect = (req, res, next) => {
   } catch (error) {
     return res.status(401).json({ message: "Not authorized, token failed" });
   }
+};
+
+// ✅ ADD THIS:
+export const requireRole = (...roles) => {
+  return (req, res, next) => {
+    const userRole = req.user?.role;
+
+    if (!userRole) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+
+    if (!roles.includes(userRole)) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    next();
+  };
 };

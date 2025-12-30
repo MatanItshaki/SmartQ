@@ -1,4 +1,3 @@
-// routes/clientRoutes.js
 import express from "express";
 import Joi from "joi";
 
@@ -16,13 +15,12 @@ import {
 
 const router = express.Router();
 
-// --------------------
+const objectId = Joi.string().hex().length(24);
+
 // Joi Schemas
-// --------------------
 const updateMeSchema = Joi.object({
   name: Joi.string().min(2).max(60).optional(),
   phone: Joi.string().max(30).allow("", null).optional(),
-  // email בד"כ לא משנים בלי אימות מחדש - אם אתה רוצה אפשר להוסיף
 });
 
 const changePasswordSchema = Joi.object({
@@ -31,12 +29,10 @@ const changePasswordSchema = Joi.object({
 });
 
 const idParamSchema = Joi.object({
-  id: Joi.string().required(),
+  id: objectId.required(),
 });
 
-// --------------------
 // Client self routes
-// --------------------
 router.get("/me", protect, requireRole("client", "admin"), getMyProfile);
 
 router.patch(
@@ -55,9 +51,7 @@ router.patch(
   changeMyPassword
 );
 
-// --------------------
 // Admin management routes
-// --------------------
 router.get("/", protect, requireRole("admin"), getAllClients);
 
 router.get(

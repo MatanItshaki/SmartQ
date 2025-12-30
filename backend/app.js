@@ -1,17 +1,21 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+
 import businessRoutes from "./src/routes/businessRoutes.js";
 import serviceRoutes from "./src/routes/serviceRoutes.js";
-import errorMiddleware from "./src/middleware/errorMiddleware.js";
 import appointmentRoutes from "./src/routes/appointmentRoutes.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import clientRoutes from "./src/routes/clientRoutes.js";
 
+import errorMiddleware from "./src/middleware/errorMiddleware.js";
 
 const app = express();
 
-app.use(cors());
+// Middlewares
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.send("SmartQ API is running!");
@@ -24,12 +28,12 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/clients", clientRoutes);
 
-
-// Error handling
-app.use((req, res, next) => {
+// 404
+app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });
 });
 
+// Error handling
 app.use(errorMiddleware);
 
 export default app;
