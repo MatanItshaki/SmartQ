@@ -10,7 +10,7 @@ import {
   login,
   me,
   registerEmployee,
-  registerBusinessUser,
+  registerBusinessOwner,
 } from "../controllers/authController.js";
 
 const router = express.Router();
@@ -38,7 +38,7 @@ const registerEmployeeSchema = Joi.object({
   businessId: Joi.string().required(),
 });
 
-const registerBusinessUserSchema = Joi.object({
+const registerbusinessOwnerSchema = Joi.object({
   name: Joi.string().min(2).max(60).required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(6).max(128).required(),
@@ -77,8 +77,8 @@ router.post(
   "/register-business",
   protect,
   requireRole("admin"),
-  validate(registerBusinessUserSchema),
-  registerBusinessUser
+  validate(registerbusinessOwnerSchema),
+  registerBusinessOwner
 );
 
 export default router;
