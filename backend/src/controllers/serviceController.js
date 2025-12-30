@@ -1,126 +1,112 @@
 import Service from "../models/Service.js";
 
-// @desc    Create new service
-// @route   POST /api/services
-// @access  Public (for now)
+const pickDefined = (obj) =>
+  Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== undefined));
+
+const assertBusinessAccess = (req, businessId) => {
+  // business users can only access their own business resources
+  if (req.user?.role === "business" && String(req.user.businessId) !== String(businessId)) {
+    const err = new Error("Forbidden");
+    err.statusCode = 403;
+    throw err;
+  }
+};
+
 export const createService = async (req, res, next) => {
   try {
     const { business, name, description, durationMinutes, price, category } = req.body;
 
     if (!business || !name || !durationMinutes || price == null) {
-      const error = new Error("business, name, durationMinutes and price are required");
-      error.statusCode = 400;
-      throw error;
+      return res.status(400).json({
+        message: "business, name, durationMinutes and price are required",
+      });
     }
+
+    // ✅ Authorization
+    // (שים את protect+requireRole ברוטס, אבל גם טוב להגן פה)
+    assertBusinessAccess(req, business);
 
     const service = await Service.create({
       business,
-      name,
-      description,
+      name: name.trim(),
+      description: description?.trim(),
       durationMinutes,
       price,
-      category,
+      category: category?.trim(),
     });
 
-    res.status(201).json({
-      success: true,
-      data: service,
-    });
+    return res.status(201).json({ success: true, data: service });
   } catch (err) {
     next(err);
   }
 };
 
-// @desc    Get all services
-// @route   GET /api/services
-// @access  Public
 export const getAllServices = async (req, res, next) => {
   try {
-    // optional filter by business: /api/services?business=<id>
     const query = {};
     if (req.query.business) {
       query.business = req.query.business;
     }
 
-    const services = await Service.find(query).populate("business", "name");
+    const services = await Service.find(query).populate("business", "name").lean();
 
-    res.json({
-      success: true,
-      count: services.length,
-      data: services,
-    });
+    return res.json({ success: true, count: services.length, data: services });
   } catch (err) {
     next(err);
   }
 };
 
-// @desc    Get single service by id
-// @route   GET /api/services/:id
-// @access  Public
 export const getServiceById = async (req, res, next) => {
   try {
-    const service = await Service.findById(req.params.id).populate("business", "name");
+    const service = await Service.findById(req.params.id).populate("business", "name").lean();
 
-    if (!service) {
-      const error = new Error("Service not found");
-      error.statusCode = 404;
-      throw error;
-    }
+    if (!service) return res.status(404).json({ message: "Service not found" });
 
-    res.json({
-      success: true,
-      data: service,
-    });
+    return res.json({ success: true, data: service });
   } catch (err) {
     next(err);
   }
 };
 
-// @desc    Update service
-// @route   PUT /api/services/:id
-// @access  Public (for now)
 export const updateService = async (req, res, next) => {
   try {
-    const { name, description, durationMinutes, price, category } = req.body;
+    // קודם מביאים את השירות כדי לבדוק הרשאות
+    const existing = await Service.findById(req.params.id).lean();
+    if (!existing) return res.status(404).json({ message: "Service not found" });
 
-    const service = await Service.findByIdAndUpdate(
-      req.params.id,
-      { name, description, durationMinutes, price, category },
-      { new: true, runValidators: true }
-    );
+    // ✅ Authorization
+    assertBusinessAccess(req, existing.business);
 
-    if (!service) {
-      const error = new Error("Service not found");
-      error.statusCode = 404;
-      throw error;
-    }
-
-    res.json({
-      success: true,
-      data: service,
+    const updates = pickDefined({
+      name: req.body.name?.trim(),
+      description: req.body.description?.trim(),
+      durationMinutes: req.body.durationMinutes,
+      price: req.body.price,
+      category: req.body.category?.trim(),
     });
+
+    const service = await Service.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+      runValidators: true,
+    });
+
+    return res.json({ success: true, data: service });
   } catch (err) {
     next(err);
   }
 };
 
-// @desc    Delete service
-// @route   DELETE /api/services/:id
-// @access  Public (for now)
 export const deleteService = async (req, res, next) => {
   try {
-    const service = await Service.findByIdAndDelete(req.params.id);
+    const existing = await Service.findById(req.params.id).lean();
+    if (!existing) return res.status(404).json({ message: "Service not found" });
 
-    if (!service) {
-      const error = new Error("Service not found");
-      error.statusCode = 404;
-      throw error;
-    }
+    // ✅ Authorization
+    assertBusinessAccess(req, existing.business);
 
-    res.json({
-      success: true,
-      message: "Service deleted",
-    });
+    await Service.findByIdAndDelete(req.params.id);
+
+    return res.json({ success: true, message: "Service deleted" });
   } catch (err) {
     next(err);
   }

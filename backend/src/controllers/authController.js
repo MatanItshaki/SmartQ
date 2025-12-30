@@ -1,30 +1,41 @@
 // controllers/authController.js
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import Client from "../models/Client.js";
 
-const signToken = (clientId) => {
+import User from "../models/User.js";
+import Client from "../models/Client.js";
+import Employee from "../models/Employee.js";
+import BusinessUser from "../models/BusinessUser.js"; // תיצור את הקובץ הזה כמו שעשינו
+
+const signToken = (user) => {
   if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET is not set in environment variables");
   }
 
-  return jwt.sign({ id: clientId }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
-  });
+  return jwt.sign(
+    {
+      id: user._id,
+      role: user.role,                 // "client" | "employee" | "business"
+      businessId: user.businessId ?? null,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
+  );
 };
 
-const sendAuthResponse = (res, client, statusCode = 200) => {
-  const token = signToken(client._id);
+const sendAuthResponse = (res, user, statusCode = 200) => {
+  const token = signToken(user);
 
-  // remove password from output
-  const safeClient = {
-    _id: client._id,
-    name: client.name,
-    email: client.email,
-    phone: client.phone,
+  // passwordHash כבר נמחק ב-toJSON אצלך, אבל נשמור safe payload ברור:
+  const safeUser = {
+    _id: user._id,
+    role: user.role,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    businessId: user.businessId ?? null,
   };
 
-  // optional cookie support (if you use cookie-parser on backend)
   const useCookie = String(process.env.JWT_USE_COOKIE || "false") === "true";
   if (useCookie) {
     const isProd = process.env.NODE_ENV === "production";
@@ -32,17 +43,16 @@ const sendAuthResponse = (res, client, statusCode = 200) => {
       httpOnly: true,
       secure: isProd,
       sameSite: isProd ? "none" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
   }
 
-  return res.status(statusCode).json({
-    token,
-    client: safeClient,
-  });
+  return res.status(statusCode).json({ token, user: safeUser });
 };
 
-// POST /api/auth/register
+// --------------------
+// POST /api/auth/register (Client)
+// --------------------
 export const register = async (req, res, next) => {
   try {
     const { name, email, password, phone } = req.body;
@@ -51,19 +61,20 @@ export const register = async (req, res, next) => {
       return res.status(400).json({ message: "name, email, password are required" });
     }
 
-    const exists = await Client.findOne({ email: email.toLowerCase().trim() });
-    if (exists) {
-      return res.status(409).json({ message: "Email already in use" });
-    }
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const exists = await User.findOne({ email: normalizedEmail }).lean();
+    if (exists) return res.status(409).json({ message: "Email already in use" });
 
     const salt = await bcrypt.genSalt(10);
-    const hashed = await bcrypt.hash(password, salt);
+    const passwordHash = await bcrypt.hash(password, salt);
 
     const client = await Client.create({
       name: name.trim(),
-      email: email.toLowerCase().trim(),
-      password: hashed,
-      phone: phone?.trim(),
+      email: normalizedEmail,
+      phone: phone?.trim() ?? "",
+      passwordHash,
+      // role נקבע אוטומטית ע"י discriminator: "client"
     });
 
     return sendAuthResponse(res, client, 201);
@@ -72,7 +83,9 @@ export const register = async (req, res, next) => {
   }
 };
 
-// POST /api/auth/login
+// --------------------
+// POST /api/auth/login (ALL ROLES)
+// --------------------
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -81,43 +94,42 @@ export const login = async (req, res, next) => {
       return res.status(400).json({ message: "email and password are required" });
     }
 
-    const client = await Client.findOne({ email: email.toLowerCase().trim() });
-    if (!client) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+    const normalizedEmail = email.toLowerCase().trim();
 
-    const ok = await bcrypt.compare(password, client.password);
-    if (!ok) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+    // חייבים להביא passwordHash לכן לא lean()
+    const user = await User.findOne({ email: normalizedEmail });
+    if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
-    return sendAuthResponse(res, client, 200);
+    const ok = await bcrypt.compare(password, user.passwordHash);
+    if (!ok) return res.status(401).json({ message: "Invalid credentials" });
+
+    return sendAuthResponse(res, user, 200);
   } catch (err) {
     return next(err);
   }
 };
 
-// GET /api/auth/me  (requires auth middleware to set req.userId OR req.user.id)
+// --------------------
+// GET /api/auth/me
+// --------------------
 export const me = async (req, res, next) => {
   try {
     const userId = req.userId || req.user?.id || req.user?._id;
 
-    if (!userId) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
+    if (!userId) return res.status(401).json({ message: "Not authenticated" });
 
-    const client = await Client.findById(userId).select("-password");
-    if (!client) {
-      return res.status(404).json({ message: "Client not found" });
-    }
+    const user = await User.findById(userId).select("-passwordHash");
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    return res.status(200).json({ client });
+    return res.status(200).json({ user });
   } catch (err) {
     return next(err);
   }
 };
 
-// POST /api/auth/logout (only relevant if you use cookies)
+// --------------------
+// POST /api/auth/logout (cookies only)
+// --------------------
 export const logout = async (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
@@ -125,4 +137,64 @@ export const logout = async (req, res) => {
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   });
   return res.status(200).json({ message: "Logged out" });
+};
+
+// --------------------
+// OPTIONAL: Register employee/business
+// (תעשה את זה מוגן: רק business/admin)
+// --------------------
+export const registerEmployee = async (req, res, next) => {
+  try {
+    const { name, email, password, phone, businessId } = req.body;
+
+    if (!name || !email || !password || !businessId) {
+      return res.status(400).json({ message: "name, email, password, businessId are required" });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    const exists = await User.findOne({ email: normalizedEmail }).lean();
+    if (exists) return res.status(409).json({ message: "Email already in use" });
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const employee = await Employee.create({
+      name: name.trim(),
+      email: normalizedEmail,
+      phone: phone?.trim() ?? "",
+      passwordHash,
+      businessId,
+    });
+
+    return sendAuthResponse(res, employee, 201);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const registerBusinessUser = async (req, res, next) => {
+  try {
+    const { name, email, password, phone, businessId } = req.body;
+
+    if (!name || !email || !password || !businessId) {
+      return res.status(400).json({ message: "name, email, password, businessId are required" });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    const exists = await User.findOne({ email: normalizedEmail }).lean();
+    if (exists) return res.status(409).json({ message: "Email already in use" });
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const businessUser = await BusinessUser.create({
+      name: name.trim(),
+      email: normalizedEmail,
+      phone: phone?.trim() ?? "",
+      passwordHash,
+      businessId,
+    });
+
+    return sendAuthResponse(res, businessUser, 201);
+  } catch (err) {
+    return next(err);
+  }
 };
