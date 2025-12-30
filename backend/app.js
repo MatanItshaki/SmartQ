@@ -3,9 +3,9 @@ import cors from "cors";
 import businessRoutes from "./src/routes/businessRoutes.js";
 import serviceRoutes from "./src/routes/serviceRoutes.js";
 import errorMiddleware from "./src/middleware/errorMiddleware.js";
-import appointmentRoutes from "./routes/appointmentRoutes.js";
-import authRoutes from "./routes/authRoutes.js";
-import clientRoutes from "./routes/clientRoutes.js";
+import appointmentRoutes from "./src/routes/appointmentRoutes.js";
+import authRoutes from "./src/routes/authRoutes.js";
+import clientRoutes from "./src/routes/clientRoutes.js";
 
 
 const app = express();
