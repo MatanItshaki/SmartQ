@@ -8,13 +8,16 @@ const businessClientSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Business",
       required: true,
+      index: true,
     },
     client: {
       type: Schema.Types.ObjectId,
-      ref: "Client",
+      ref: "User",
       required: true,
+      index: true,
     },
   },
+  { timestamps: true }
 );
 
 // prevent duplicate pairs (same client connected to same business twice)

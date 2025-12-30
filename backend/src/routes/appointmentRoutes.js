@@ -1,5 +1,7 @@
 // routes/appointmentRoutes.js
 import express from "express";
+import Joi from "joi";
+
 import {
   createAppointment,
   getBusinessAppointments,
@@ -10,7 +12,6 @@ import {
 
 import { protect, requireRole } from "../middleware/authMiddleware.js";
 import { validate } from "../middleware/validateMiddleware.js";
-import Joi from "joi";
 
 const router = express.Router();
 
@@ -31,7 +32,7 @@ const businessAppointmentsQuerySchema = Joi.object({
   to: Joi.date().iso().optional(),
   employeeId: Joi.string().optional(),
   status: Joi.string()
-    .valid("pending", "confirmed", "cancelled", "completed", "no_show")
+    .valid("scheduled", "cancelled", "completed") // ✅ match model
     .optional(),
 });
 
@@ -39,43 +40,47 @@ const myAppointmentsQuerySchema = Joi.object({
   from: Joi.date().iso().optional(),
   to: Joi.date().iso().optional(),
   status: Joi.string()
-    .valid("pending", "confirmed", "cancelled", "completed", "no_show")
+    .valid("scheduled", "cancelled", "completed") // ✅ match model
     .optional(),
 });
 
 const updateStatusSchema = Joi.object({
   status: Joi.string()
-    .valid("pending", "confirmed", "cancelled", "completed", "no_show")
+    .valid("scheduled", "cancelled", "completed") // ✅ match model
     .required(),
+});
+
+const idParamSchema = Joi.object({
+  id: Joi.string().required(),
 });
 
 // --------------------
 // Routes
 // --------------------
 
-// Create appointment (client)
+// Create appointment (client only)
 router.post(
   "/",
   protect,
-  requireRole("client", "admin", "business"), // אם אתה רוצה רק client: תחליף ל("client")
+  requireRole("client", "admin"),
   validate(createAppointmentSchema),
   createAppointment
 );
 
-// My appointments (client)
+// My appointments (client + employee can use this if your controller supports it)
 router.get(
   "/me",
   protect,
-  requireRole("client", "admin"),
+  requireRole("client", "employee", "admin"),
   validate(myAppointmentsQuerySchema, "query"),
   getMyAppointments
 );
 
-// Business appointments (business/admin)
+// Business appointments (business/admin, optionally employee)
 router.get(
   "/business/:businessId",
   protect,
-  requireRole("business", "admin"),
+  requireRole("business", "admin", "employee"),
   validate(businessAppointmentsQuerySchema, "query"),
   getBusinessAppointments
 );
@@ -84,7 +89,8 @@ router.get(
 router.patch(
   "/:id/status",
   protect,
-  requireRole("client", "business", "admin"),
+  requireRole("client", "business", "admin", "employee"),
+  validate(idParamSchema, "params"),
   validate(updateStatusSchema),
   updateAppointmentStatus
 );
@@ -94,6 +100,7 @@ router.delete(
   "/:id",
   protect,
   requireRole("business", "admin"),
+  validate(idParamSchema, "params"),
   deleteAppointment
 );
 

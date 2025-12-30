@@ -4,22 +4,25 @@ import Joi from "joi";
 export const validate = (schema, property = "body") => {
   return (req, res, next) => {
     const options = {
-      abortEarly: false,   // return all errors
+      abortEarly: false,
       allowUnknown: false,
-      stripUnknown: true, // remove unknown fields
+      stripUnknown: true,
     };
 
     const { error, value } = schema.validate(req[property], options);
 
     if (error) {
-      const details = error.details.map(d => d.message);
+      const errors = error.details.map((d) =>
+        d.message.replace(/["]/g, "") // remove quotes
+      );
+
       return res.status(400).json({
+        success: false,
         message: "Validation error",
-        errors: details,
+        errors,
       });
     }
 
-    // replace with validated & sanitized data
     req[property] = value;
     next();
   };
