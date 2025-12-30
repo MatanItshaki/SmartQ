@@ -3,6 +3,10 @@ import cors from "cors";
 import businessRoutes from "./src/routes/businessRoutes.js";
 import serviceRoutes from "./src/routes/serviceRoutes.js";
 import errorMiddleware from "./src/middleware/errorMiddleware.js";
+import appointmentRoutes from "./routes/appointmentRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import clientRoutes from "./routes/clientRoutes.js";
+
 
 const app = express();
 
@@ -16,6 +20,10 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/api/business", businessRoutes);
 app.use("/api/services", serviceRoutes);
+app.use("/api/appointments", appointmentRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/clients", clientRoutes);
+
 
 // Error handling
 app.use(errorMiddleware);
