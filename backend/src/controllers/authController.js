@@ -15,7 +15,7 @@ const signToken = (user) => {
   return jwt.sign(
     {
       id: user._id,
-      role: user.role,                 // "client" | "employee" | "business"
+      role: user.role, // "client" | "employee" | "business"
       businessId: user.businessId ?? null,
     },
     process.env.JWT_SECRET,
@@ -58,13 +58,16 @@ export const register = async (req, res, next) => {
     const { name, email, password, phone } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ message: "name, email, password are required" });
+      return res
+        .status(400)
+        .json({ message: "name, email, password are required" });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
 
     const exists = await User.findOne({ email: normalizedEmail }).lean();
-    if (exists) return res.status(409).json({ message: "Email already in use" });
+    if (exists)
+      return res.status(409).json({ message: "Email already in use" });
 
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
@@ -91,14 +94,33 @@ export const login = async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "email and password are required" });
+      return res
+        .status(400)
+        .json({ message: "email and password are required" });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
 
     // חייבים להביא passwordHash לכן לא lean()
-    const user = await User.findOne({ email: normalizedEmail });
+    const user = await User.findOne({ email: normalizedEmail }).select(
+      "+passwordHash role"
+    );
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
+
+    if (!user.passwordHash) {
+      return res.status(500).json({
+        message:
+          "User record is missing passwordHash. Re-register or fix DB data.",
+      });
+    }
+    console.log("LOGIN normalizedEmail:", normalizedEmail);
+    console.log("LOGIN user:", {
+      id: user?._id?.toString(),
+      email: user?.email,
+      role: user?.role,
+      hasPasswordHash: !!user?.passwordHash,
+      passwordHashType: typeof user?.passwordHash,
+    });
 
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ message: "Invalid credentials" });
@@ -148,12 +170,15 @@ export const registerEmployee = async (req, res, next) => {
     const { name, email, password, phone, businessId } = req.body;
 
     if (!name || !email || !password || !businessId) {
-      return res.status(400).json({ message: "name, email, password, businessId are required" });
+      return res
+        .status(400)
+        .json({ message: "name, email, password, businessId are required" });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
     const exists = await User.findOne({ email: normalizedEmail }).lean();
-    if (exists) return res.status(409).json({ message: "Email already in use" });
+    if (exists)
+      return res.status(409).json({ message: "Email already in use" });
 
     const passwordHash = await bcrypt.hash(password, 10);
 
@@ -176,12 +201,15 @@ export const registerBusinessOwner = async (req, res, next) => {
     const { name, email, password, phone, businessId } = req.body;
 
     if (!name || !email || !password || !businessId) {
-      return res.status(400).json({ message: "name, email, password, businessId are required" });
+      return res
+        .status(400)
+        .json({ message: "name, email, password, businessId are required" });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
     const exists = await User.findOne({ email: normalizedEmail }).lean();
-    if (exists) return res.status(409).json({ message: "Email already in use" });
+    if (exists)
+      return res.status(409).json({ message: "Email already in use" });
 
     const passwordHash = await bcrypt.hash(password, 10);
 

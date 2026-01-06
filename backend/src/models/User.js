@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema(
     email: { type: String, required: true, lowercase: true, trim: true },
     phone: { type: String, default: "" },
 
-    passwordHash: { type: String, required: true, select: false },
+    passwordHash: { type: String, required: true, select: true },
 
     isActive: { type: Boolean, default: true },
   },
