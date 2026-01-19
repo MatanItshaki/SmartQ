@@ -1,3 +1,4 @@
+// routes/businessRoutes.js
 import express from "express";
 import {
   createBusiness,
@@ -11,28 +12,58 @@ import { protect, requireRole } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// /api/business
+/**
+ * Route: /api/business
+ */
 router
   .route("/")
-  .get(getAllBusinesses) // public
+  /**
+   * @desc    Get all businesses
+   * @access  Public
+   */
+  .get(getAllBusinesses) 
+  
+  /**
+   * @desc    Create a new business
+   * @access  Private (Admin only)
+   * @process 1. protect: Verifies JWT token
+   * 2. requireRole: Ensures user role is 'admin'
+   */
   .post(
     protect,
-    requireRole("admin"), // 🔐 רק admin יוצר עסקים
+    requireRole("admin"), 
     createBusiness
   );
 
-// /api/business/:id
+/**
+ * Route: /api/business/:id
+ */
 router
   .route("/:id")
-  .get(getBusinessById) // public
-  .put(
+  /**
+   * @desc    Get a single business by ID
+   * @access  Public
+   */
+  .get(getBusinessById) 
+  
+  /**
+   * @desc    Update business details
+   * @access  Private (Business Owner / Admin)
+   * @process Uses PUT method to overwrite or update business data
+   */
+  .patch(
     protect,
-    requireRole("business", "admin"), // 🔐 business/admin
+    requireRole("business", "admin"), 
     updateBusiness
   )
+  
+  /**
+   * @desc    Delete a business
+   * @access  Private (Business Owner / Admin)
+   */
   .delete(
     protect,
-    requireRole("business", "admin"), // 🔐 business/admin
+    requireRole("business", "admin"), 
     deleteBusiness
   );
 

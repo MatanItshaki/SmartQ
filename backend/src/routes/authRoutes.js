@@ -15,9 +15,13 @@ import {
 
 const router = express.Router();
 
-// --------------------
-// Joi Schemas
-// --------------------
+// ---------------------------------------------------------
+// Joi Validation Schemas
+// Ensures that incoming request bodies follow strict rules
+// before reaching the controller.
+// ---------------------------------------------------------
+
+// Schema for standard client registration
 const registerSchema = Joi.object({
   name: Joi.string().min(2).max(60).required(),
   email: Joi.string().email().required(),
@@ -25,11 +29,13 @@ const registerSchema = Joi.object({
   phone: Joi.string().max(30).allow("", null),
 });
 
+// Schema for user login
 const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).max(128).required(),
 });
 
+// Schema for registering an employee (requires businessId)
 const registerEmployeeSchema = Joi.object({
   name: Joi.string().min(2).max(60).required(),
   email: Joi.string().email().required(),
@@ -38,6 +44,7 @@ const registerEmployeeSchema = Joi.object({
   businessId: Joi.string().required(),
 });
 
+// Schema for registering a business owner
 const registerbusinessOwnerSchema = Joi.object({
   name: Joi.string().min(2).max(60).required(),
   email: Joi.string().email().required(),
@@ -47,23 +54,46 @@ const registerbusinessOwnerSchema = Joi.object({
 });
 
 // --------------------
-// Routes
+// Public Routes
+// Accessible by anyone (unauthenticated users)
 // --------------------
 
-// Client register
+/**
+ * @route   POST /api/auth/register
+ * @desc    Register a new client
+ * @access  Public
+ */
 router.post("/register", validate(registerSchema), register);
 
-// Login (ALL ROLES)
+/**
+ * @route   POST /api/auth/login
+ * @desc    Authenticate user & get token
+ * @access  Public
+ */
 router.post("/login", validate(loginSchema), login);
 
-// Current logged-in user info
+// --------------------
+// Protected Routes
+// Requires a valid JWT token
+// --------------------
+
+/**
+ * @route   GET /api/auth/me
+ * @desc    Get current user profile
+ * @access  Private (Authenticated users)
+ */
 router.get("/me", protect, me);
 
-// --------------------
-// Admin / Business routes
-// --------------------
+// -------------------------
+// Admin / Business Routes
+// Requires specific roles to access
+// -------------------------
 
-// Create employee (business/admin only)
+/**
+ * @route   POST /api/auth/register-employee
+ * @desc    Create a new employee user
+ * @access  Private (Business owners or Admins only)
+ */
 router.post(
   "/register-employee",
   protect,
@@ -72,7 +102,11 @@ router.post(
   registerEmployee
 );
 
-// Create business user (admin only, או business אם תרצה)
+/**
+ * @route   POST /api/auth/register-business
+ * @desc    Create a new business owner user
+ * @access  Private (Admins only)
+ */
 router.post(
   "/register-business",
   protect,
