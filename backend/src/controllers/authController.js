@@ -5,8 +5,12 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import Client from "../models/Client.js";
 import Employee from "../models/Employee.js";
-import BusinessOwner from "../models/BusinessOwner.js"; // תיצור את הקובץ הזה כמו שעשינו
+import BusinessOwner from "../models/BusinessOwner.js";
 
+/**
+ * Generates a Signed JWT Token
+ * Payload includes: user ID, role, and business link.
+ */
 const signToken = (user) => {
   if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET is not set in environment variables");
@@ -15,7 +19,7 @@ const signToken = (user) => {
   return jwt.sign(
     {
       id: user._id,
-      role: user.role, // "client" | "employee" | "business"
+      role: user.role, // "client" | "employee" | "business" | "admin"
       businessId: user.businessId ?? null,
     },
     process.env.JWT_SECRET,
@@ -23,10 +27,15 @@ const signToken = (user) => {
   );
 };
 
+/**
+ * Standardizes the Auth Response
+ * Sends the token and non-sensitive user data to the client.
+ * Supports both JSON response and secure HttpOnly cookies.
+ */
 const sendAuthResponse = (res, user, statusCode = 200) => {
   const token = signToken(user);
 
-  // passwordHash כבר נמחק ב-toJSON אצלך, אבל נשמור safe payload ברור:
+  // Define a safe payload to avoid sending sensitive data like passwordHash
   const safeUser = {
     _id: user._id,
     role: user.role,
@@ -36,48 +45,49 @@ const sendAuthResponse = (res, user, statusCode = 200) => {
     businessId: user.businessId ?? null,
   };
 
+  // Optional: Handle Cookie-based authentication
   const useCookie = String(process.env.JWT_USE_COOKIE || "false") === "true";
   if (useCookie) {
     const isProd = process.env.NODE_ENV === "production";
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: isProd,
+      httpOnly: true, // Prevents XSS attacks
+      secure: isProd, // Only send over HTTPS in production
       sameSite: isProd ? "none" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
   }
 
   return res.status(statusCode).json({ token, user: safeUser });
 };
 
-// --------------------
-// POST /api/auth/register (Client)
-// --------------------
+/**
+ * POST /api/auth/register
+ * Public route to register new customers (Clients).
+ */
 export const register = async (req, res, next) => {
   try {
     const { name, email, password, phone } = req.body;
 
     if (!name || !email || !password) {
-      return res
-        .status(400)
-        .json({ message: "name, email, password are required" });
+      return res.status(400).json({ message: "name, email, password are required" });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
 
+    // Check if user already exists
     const exists = await User.findOne({ email: normalizedEmail }).lean();
-    if (exists)
-      return res.status(409).json({ message: "Email already in use" });
+    if (exists) return res.status(409).json({ message: "Email already in use" });
 
+    // Hash password before saving
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
+    // Create client (Discriminator will set role to "client")
     const client = await Client.create({
       name: name.trim(),
       email: normalizedEmail,
       phone: phone?.trim() ?? "",
       passwordHash,
-      // role נקבע אוטומטית ע"י discriminator: "client"
     });
 
     return sendAuthResponse(res, client, 201);
@@ -86,42 +96,32 @@ export const register = async (req, res, next) => {
   }
 };
 
-// --------------------
-// POST /api/auth/login (ALL ROLES)
-// --------------------
+/**
+ * POST /api/auth/login
+ * Unified login for all roles.
+ */
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "email and password are required" });
+      return res.status(400).json({ message: "email and password are required" });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // חייבים להביא passwordHash לכן לא lean()
+    // Fetch user and explicitly include passwordHash for comparison
     const user = await User.findOne({ email: normalizedEmail }).select(
-      "+passwordHash role"
+      "_id name email phone role businessId isActive passwordHash"
     );
+
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
     if (!user.passwordHash) {
-      return res.status(500).json({
-        message:
-          "User record is missing passwordHash. Re-register or fix DB data.",
-      });
+      return res.status(500).json({ message: "User record is corrupted (missing hash)." });
     }
-    console.log("LOGIN normalizedEmail:", normalizedEmail);
-    console.log("LOGIN user:", {
-      id: user?._id?.toString(),
-      email: user?.email,
-      role: user?.role,
-      hasPasswordHash: !!user?.passwordHash,
-      passwordHashType: typeof user?.passwordHash,
-    });
 
+    // Compare provided password with stored hash
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ message: "Invalid credentials" });
 
@@ -131,12 +131,13 @@ export const login = async (req, res, next) => {
   }
 };
 
-// --------------------
-// GET /api/auth/me
-// --------------------
+/**
+ * GET /api/auth/me
+ * Returns current logged-in user details.
+ */
 export const me = async (req, res, next) => {
   try {
-    const userId = req.userId || req.user?.id || req.user?._id;
+    const userId = req.userId || req.user?.id;
 
     if (!userId) return res.status(401).json({ message: "Not authenticated" });
 
@@ -149,9 +150,10 @@ export const me = async (req, res, next) => {
   }
 };
 
-// --------------------
-// POST /api/auth/logout (cookies only)
-// --------------------
+/**
+ * POST /api/auth/logout
+ * Clears the auth cookie.
+ */
 export const logout = async (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
@@ -161,24 +163,21 @@ export const logout = async (req, res) => {
   return res.status(200).json({ message: "Logged out" });
 };
 
-// --------------------
-// OPTIONAL: Register employee/business
-// (תעשה את זה מוגן: רק business/admin)
-// --------------------
+/**
+ * POST /api/auth/register-employee
+ * Protected route to create employees under a business.
+ */
 export const registerEmployee = async (req, res, next) => {
   try {
     const { name, email, password, phone, businessId } = req.body;
 
     if (!name || !email || !password || !businessId) {
-      return res
-        .status(400)
-        .json({ message: "name, email, password, businessId are required" });
+      return res.status(400).json({ message: "All fields are required" });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
     const exists = await User.findOne({ email: normalizedEmail }).lean();
-    if (exists)
-      return res.status(409).json({ message: "Email already in use" });
+    if (exists) return res.status(409).json({ message: "Email already in use" });
 
     const passwordHash = await bcrypt.hash(password, 10);
 
@@ -187,7 +186,7 @@ export const registerEmployee = async (req, res, next) => {
       email: normalizedEmail,
       phone: phone?.trim() ?? "",
       passwordHash,
-      businessId,
+      businessId, // Link employee to specific business
     });
 
     return sendAuthResponse(res, employee, 201);
@@ -196,21 +195,15 @@ export const registerEmployee = async (req, res, next) => {
   }
 };
 
+/**
+ * POST /api/auth/register-business-owner
+ * Creates a user with business management privileges.
+ */
 export const registerBusinessOwner = async (req, res, next) => {
   try {
     const { name, email, password, phone, businessId } = req.body;
 
-    if (!name || !email || !password || !businessId) {
-      return res
-        .status(400)
-        .json({ message: "name, email, password, businessId are required" });
-    }
-
     const normalizedEmail = email.toLowerCase().trim();
-    const exists = await User.findOne({ email: normalizedEmail }).lean();
-    if (exists)
-      return res.status(409).json({ message: "Email already in use" });
-
     const passwordHash = await bcrypt.hash(password, 10);
 
     const businessOwner = await BusinessOwner.create({
