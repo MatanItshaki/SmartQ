@@ -16,6 +16,8 @@ const businessSchema = new Schema(
     address: {
       type: String,
       trim: true,
+      unique: true,
+
     },
     phone: {
       type: String,

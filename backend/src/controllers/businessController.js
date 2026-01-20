@@ -21,6 +21,16 @@ export const createBusiness = async (req, res, next) => {
     // Basic validation for required fields
     if (!name) return res.status(400).json({ message: "Business name is required" });
 
+    // ✅ CHECK FOR DUPLICATE: Case-insensitive search
+    const normalizedName = name.trim();
+    const exists = await Business.findOne({ 
+      name: { $regex: new RegExp(`^${normalizedName}$`, 'i') } 
+    }).lean();
+
+    if (exists) {
+      return res.status(409).json({ message: "A business with this name already exists" });
+    }
+
     // Create business with trimmed string values
     const business = await Business.create({
       name: name.trim(),
