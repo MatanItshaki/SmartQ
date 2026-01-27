@@ -5,7 +5,9 @@ import {
   getAllBusinesses,
   getBusinessById,
   updateBusiness,
+
   deleteBusiness,
+  getEmployeesByBusiness,
 } from "../controllers/businessController.js";
 
 import { protect, requireRole } from "../middleware/authMiddleware.js";
@@ -66,5 +68,10 @@ router
     requireRole("business", "admin"), 
     deleteBusiness
   );
+
+/**
+ * Route: /api/business/:id/employees
+ */
+router.get("/:id/employees", getEmployeesByBusiness);
 
 export default router;
