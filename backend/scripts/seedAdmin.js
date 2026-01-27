@@ -11,13 +11,13 @@ async function seedAdmin() {
   const name = process.env.ADMIN_NAME || "System Admin";
 
   if (!email || !password) {
-    console.error("❌ Missing ADMIN_EMAIL or ADMIN_PASSWORD");
+    console.error("Missing ADMIN_EMAIL or ADMIN_PASSWORD");
     process.exit(1);
   }
 
   const exists = await Admin.findOne({ email }).lean();
   if (exists) {
-    console.log("ℹ️ Admin already exists:", email);
+    console.log("ℹAdmin already exists:", email);
     process.exit(0);
   }
 
@@ -31,7 +31,7 @@ const admin = await Admin.create({
 });
 
 
-  console.log("✅ Admin created:", admin.email);
+  console.log("Admin created:", admin.email);
   process.exit(0);
 }
 

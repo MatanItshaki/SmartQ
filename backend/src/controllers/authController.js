@@ -1,10 +1,10 @@
 // controllers/authController.js
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
+import Business from "../models/Business.js";
 import User from "../models/User.js";
 import Client from "../models/Client.js";
-import Employee from "../models/Employee.js";
+import Employee from "../models/Employee.js"; 
 import BusinessOwner from "../models/BusinessOwner.js";
 
 /**
@@ -175,6 +175,12 @@ export const registerEmployee = async (req, res, next) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    // ✅ VERIFY BUSINESS EXISTS: Prevent linking to a "ghost" business
+    const businessExists = await Business.exists({ _id: businessId });
+    if (!businessExists) {
+      return res.status(404).json({ message: "Specified business does not exist" });
+    }
+
     const normalizedEmail = email.toLowerCase().trim();
     const exists = await User.findOne({ email: normalizedEmail }).lean();
     if (exists) return res.status(409).json({ message: "Email already in use" });
@@ -202,6 +208,16 @@ export const registerEmployee = async (req, res, next) => {
 export const registerBusinessOwner = async (req, res, next) => {
   try {
     const { name, email, password, phone, businessId } = req.body;
+
+    if (!businessId) {
+      return res.status(400).json({ message: "businessId is required to create an owner" });
+    }
+
+    // ✅ VERIFY BUSINESS EXISTS
+    const businessExists = await Business.exists({ _id: businessId });
+    if (!businessExists) {
+      return res.status(404).json({ message: "Cannot create owner: Business not found" });
+    }
 
     const normalizedEmail = email.toLowerCase().trim();
     const passwordHash = await bcrypt.hash(password, 10);

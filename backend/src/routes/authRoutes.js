@@ -102,6 +102,7 @@ router.post(
   registerEmployee
 );
 
+
 /**
  * @route   POST /api/auth/register-business
  * @desc    Create a new business owner user
