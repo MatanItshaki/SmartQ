@@ -213,7 +213,7 @@ export const registerBusinessOwner = async (req, res, next) => {
       return res.status(400).json({ message: "businessId is required to create an owner" });
     }
 
-    // ✅ VERIFY BUSINESS EXISTS
+    // VERIFY BUSINESS EXISTS
     const businessExists = await Business.exists({ _id: businessId });
     if (!businessExists) {
       return res.status(404).json({ message: "Cannot create owner: Business not found" });

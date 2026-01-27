@@ -1,0 +1,12 @@
+Found 2 appointments:
+Appt ID: 696e6c7bb07ff074a793f3d0, Client: 696e6451c97d50bc71e7491d, Business: 696e634ec97d50bc71e74915, Date: Sun Feb 01 2026 12:00:00 GMT+0200 (Israel Standard Time)
+Appt ID: 69788447ec66337a688859bc, Client: 69787d397fbfd42dde49db1a, Business: 69788359f0fc283c2eed3743, Date: Tue Jan 27 2026 14:30:00 GMT+0200 (Israel Standard Time)
+Found 8 users:
+User ID: 696e5dd5150cfb184de33cb0, Name: System Admin, Email: admin@smartq.com, Role: admin
+User ID: 696e6451c97d50bc71e7491d, Name: Israel Updated, Email: moshe@gmail.com, Role: client
+User ID: 696f4515102084931377f88b, Name: Matan Client, Email: matan@gmail.com, Role: client
+User ID: 6978720df3e61b2f4f90d2ec, Name: Owner, Email: owner@email.com, Role: business
+User ID: 69787d397fbfd42dde49db1a, Name: Matan Itshaki, Email: matan.itshaki06@gmail.com, Role: client
+User ID: 69788359f0fc283c2eed3747, Name: John Barber, Email: john@barberking.com, Role: employee
+User ID: 69788359f0fc283c2eed3748, Name: Sarah Stylist, Email: sarah@beautyqueen.com, Role: employee
+User ID: 69788359f0fc283c2eed3749, Name: Dr. Drill, Email: drill@drteeth.com, Role: employee

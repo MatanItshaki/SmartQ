@@ -1,5 +1,6 @@
 // controllers/businessController.js
 import Business from "../models/Business.js";
+import Employee from "../models/Employee.js"; // Make sure to import Employee model
 
 /**
  * Helper Function: buildUpdateObject
@@ -132,6 +133,21 @@ export const deleteBusiness = async (req, res, next) => {
     if (!business) return res.status(404).json({ message: "Business not found" });
 
     return res.json({ success: true, message: "Business deleted successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * @desc    Get employees for a business
+ * @route   GET /api/business/:id/employees
+ * @access  Public (or Private if needed)
+ */
+export const getEmployeesByBusiness = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const employees = await Employee.find({ businessId: id }).lean();
+    return res.json({ success: true, count: employees.length, data: employees });
   } catch (err) {
     next(err);
   }

@@ -134,6 +134,8 @@ export const getMyAppointments = async (req, res, next) => {
   try {
     const userId = req.user?.id;
     const role = req.user?.role;
+    console.log(`getMyAppointments: UserID=${userId}, Role=${role}`);
+    
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
     const { from, to, status } = req.query;
@@ -142,6 +144,8 @@ export const getMyAppointments = async (req, res, next) => {
     if (role === "client") q.client = userId;
     else if (role === "employee") q.employee = userId;
     else return res.status(403).json({ message: "Forbidden" });
+
+    console.log("getMyAppointments Query:", JSON.stringify(q));
 
     if (status) q.status = status;
 
