@@ -31,9 +31,9 @@ const errorMiddleware = (err, req, res, next) => {
 
   // Log (full only in dev)
   if (process.env.NODE_ENV !== "production") {
-    console.error("❌ Error:", err);
+    console.error("Error:", err);
   } else {
-    console.error("❌ Error:", message);
+    console.error("Error:", message);
   }
 
   res.status(statusCode).json({

@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
-dotenv.config();            // ✅ load env FIRST
+dotenv.config();
 
 import app from "./app.js";
 import connectDB from "./src/config/db.js";
 
-connectDB();                // ✅ now MONGO_URI is defined
+connectDB();
 
 const PORT = process.env.PORT || 5000;
 
