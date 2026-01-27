@@ -22,7 +22,7 @@ export const createService = async (req, res, next) => {
       });
     }
 
-    // ✅ Authorization
+    // Authorization
     // (שים את protect+requireRole ברוטס, אבל גם טוב להגן פה)
     assertBusinessAccess(req, business);
 
@@ -74,7 +74,7 @@ export const updateService = async (req, res, next) => {
     const existing = await Service.findById(req.params.id).lean();
     if (!existing) return res.status(404).json({ message: "Service not found" });
 
-    // ✅ Authorization
+    // Authorization
     assertBusinessAccess(req, existing.business);
 
     const updates = pickDefined({
@@ -101,7 +101,7 @@ export const deleteService = async (req, res, next) => {
     const existing = await Service.findById(req.params.id).lean();
     if (!existing) return res.status(404).json({ message: "Service not found" });
 
-    // ✅ Authorization
+    // Authorization
     assertBusinessAccess(req, existing.business);
 
     await Service.findByIdAndDelete(req.params.id);
