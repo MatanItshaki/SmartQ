@@ -33,7 +33,6 @@ export const protect = (req, res, next) => {
   }
 };
 
-// ✅ ADD THIS:
 export const requireRole = (...roles) => {
   return (req, res, next) => {
     const userRole = req.user?.role;

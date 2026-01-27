@@ -7,8 +7,7 @@ const businessOwnerSchema = new mongoose.Schema({
     ref: "Business",
     required: true,
   },
-  // אופציונלי: הרשאות
-  // permissions: [{ type: String }]
+
 });
 
 businessOwnerSchema.index({ businessId: 1 });

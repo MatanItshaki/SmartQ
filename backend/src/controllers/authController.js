@@ -118,7 +118,7 @@ export const login = async (req, res, next) => {
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
     if (!user.passwordHash) {
-      return res.status(500).json({ message: "User record is corrupted (missing hash)." });
+      return res.status(500). json({ message: "User record is corrupted (missing hash)." });
     }
 
     // Compare provided password with stored hash
@@ -175,7 +175,7 @@ export const registerEmployee = async (req, res, next) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // ✅ VERIFY BUSINESS EXISTS: Prevent linking to a "ghost" business
+    // VERIFY BUSINESS EXISTS: Prevent linking to a "ghost" business
     const businessExists = await Business.exists({ _id: businessId });
     if (!businessExists) {
       return res.status(404).json({ message: "Specified business does not exist" });

@@ -22,7 +22,7 @@ export const createBusiness = async (req, res, next) => {
     // Basic validation for required fields
     if (!name) return res.status(400).json({ message: "Business name is required" });
 
-    // ✅ CHECK FOR DUPLICATE: Case-insensitive search
+    // CHECK FOR DUPLICATE: Case-insensitive search
     const normalizedName = name.trim();
     const exists = await Business.findOne({ 
       name: { $regex: new RegExp(`^${normalizedName}$`, 'i') } 
