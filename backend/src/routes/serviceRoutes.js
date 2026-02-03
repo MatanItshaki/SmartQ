@@ -20,30 +20,57 @@ const idParamSchema = Joi.object({
 });
 
 // /api/services
+/**
+ * @route   GET /api/services
+ * @desc    Get all services (optionally filtered by business)
+ * @access  Public
+ */
 router
   .route("/")
-  .get(getAllServices) // public
+  .get(getAllServices)
+
+  /**
+   * @route   POST /api/services
+   * @desc    Create a new service
+   * @access  Private (Business, Admin)
+   */
   .post(
-    protect,
-    requireRole("business", "admin"),
-    createService
+    protect, // 1. Authenticate
+    requireRole("business", "admin"), // 2. Authorize
+    createService // 3. Create Service
   );
 
-// /api/services/:id
+/**
+ * @route   GET /api/services/:id
+ * @desc    Get a single service by ID
+ * @access  Public
+ */
 router
   .route("/:id")
-  .get(getServiceById) // public
+  .get(getServiceById)
+
+  /**
+   * @route   PUT /api/services/:id
+   * @desc    Update a service
+   * @access  Private (Business of that service, Admin)
+   */
   .put(
-    protect,
-    requireRole("business", "admin"),
-    validate(idParamSchema, "params"),
-    updateService
+    protect, // 1. Authenticate
+    requireRole("business", "admin"), // 2. Authorize
+    validate(idParamSchema, "params"), // 3. Validate ID
+    updateService // 4. Update Service
   )
+
+  /**
+   * @route   DELETE /api/services/:id
+   * @desc    Delete a service
+   * @access  Private (Business of that service, Admin)
+   */
   .delete(
-    protect,
-    requireRole("business", "admin"),
-    validate(idParamSchema, "params"),
-    deleteService
+    protect, // 1. Authenticate
+    requireRole("business", "admin"), // 2. Authorize
+    validate(idParamSchema, "params"), // 3. Validate ID
+    deleteService // 4. Delete Service
   );
 
 export default router;

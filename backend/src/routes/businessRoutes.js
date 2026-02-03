@@ -32,9 +32,9 @@ router
    * 2. requireRole: Ensures user role is 'admin'
    */
   .post(
-    protect,
-    requireRole("admin"), 
-    createBusiness
+    protect, // 1. Authenticate
+    requireRole("admin"), // 2. Authorize: Admin only
+    createBusiness // 3. Create Business
   );
 
 /**
@@ -54,9 +54,9 @@ router
    * @process Uses PUT method to overwrite or update business data
    */
   .patch(
-    protect,
-    requireRole("business", "admin"), 
-    updateBusiness
+    protect, // 1. Authenticate
+    requireRole("business", "admin"), // 2. Authorize: Owner/Admin
+    updateBusiness // 3. Update Details
   )
   
   /**
@@ -64,9 +64,9 @@ router
    * @access  Private (Business Owner / Admin)
    */
   .delete(
-    protect,
-    requireRole("business", "admin"), 
-    deleteBusiness
+    protect, // 1. Authenticate
+    requireRole("business", "admin"), // 2. Authorize: Owner/Admin
+    deleteBusiness // 3. Remove Business
   );
 
 /**

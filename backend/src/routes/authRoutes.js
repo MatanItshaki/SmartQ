@@ -63,14 +63,20 @@ const registerbusinessOwnerSchema = Joi.object({
  * @desc    Register a new client
  * @access  Public
  */
-router.post("/register", validate(registerSchema), register);
+router.post("/register", 
+  validate(registerSchema), // 1. Validate Registration Data
+  register // 2. Create Client
+);
 
 /**
  * @route   POST /api/auth/login
  * @desc    Authenticate user & get token
  * @access  Public
  */
-router.post("/login", validate(loginSchema), login);
+router.post("/login", 
+  validate(loginSchema), // 1. Validate Login Creds
+  login // 2. Authenticate & Issue Token
+);
 
 // --------------------
 // Protected Routes
@@ -82,7 +88,10 @@ router.post("/login", validate(loginSchema), login);
  * @desc    Get current user profile
  * @access  Private (Authenticated users)
  */
-router.get("/me", protect, me);
+router.get("/me", 
+  protect, // 1. Verify Token
+  me // 2. Return User Profile
+);
 
 // -------------------------
 // Admin / Business Routes
@@ -96,10 +105,10 @@ router.get("/me", protect, me);
  */
 router.post(
   "/register-employee",
-  protect,
-  requireRole("business", "admin"),
-  validate(registerEmployeeSchema),
-  registerEmployee
+  protect, // 1. Authenticate
+  requireRole("business", "admin"), // 2. Authorize: Busines Owner/Admin
+  validate(registerEmployeeSchema), // 3. Validate Employee Data
+  registerEmployee // 4. Create Employee
 );
 
 
@@ -110,10 +119,10 @@ router.post(
  */
 router.post(
   "/register-business",
-  protect,
-  requireRole("admin"),
-  validate(registerbusinessOwnerSchema),
-  registerBusinessOwner
+  protect, // 1. Authenticate
+  requireRole("admin"), // 2. Authorize: Admin only
+  validate(registerbusinessOwnerSchema), // 3. Validate Owner Data
+  registerBusinessOwner // 4. Create Business Owner
 );
 
 export default router;

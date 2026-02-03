@@ -1,8 +1,10 @@
 import Service from "../models/Service.js";
 
+// Helper: Removes undefined values from an object to prevent overwriting DB fields with undefined
 const pickDefined = (obj) =>
   Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== undefined));
 
+// Helper: Throws error if business user tries to access resources of another business
 const assertBusinessAccess = (req, businessId) => {
   // business users can only access their own business resources
   if (req.user?.role === "business" && String(req.user.businessId) !== String(businessId)) {
@@ -12,6 +14,17 @@ const assertBusinessAccess = (req, businessId) => {
   }
 };
 
+/**
+ * Creates a new service for a business.
+ * 
+ * Validates required fields such as business ID, name, duration, and price.
+ * Enforces authorization: Business users can only create services for their own business.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
+ */
 export const createService = async (req, res, next) => {
   try {
     const { business, name, description, durationMinutes, price, category } = req.body;
@@ -23,7 +36,6 @@ export const createService = async (req, res, next) => {
     }
 
     // Authorization
-    // (שים את protect+requireRole ברוטס, אבל גם טוב להגן פה)
     assertBusinessAccess(req, business);
 
     const service = await Service.create({
@@ -41,6 +53,14 @@ export const createService = async (req, res, next) => {
   }
 };
 
+/**
+ * Retrieves all services, optionally filtered by business ID.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
+ */
 export const getAllServices = async (req, res, next) => {
   try {
     const query = {};
@@ -56,6 +76,14 @@ export const getAllServices = async (req, res, next) => {
   }
 };
 
+/**
+ * Retrieves a single service by its ID, including the business name.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
+ */
 export const getServiceById = async (req, res, next) => {
   try {
     const service = await Service.findById(req.params.id).populate("business", "name").lean();
@@ -68,6 +96,16 @@ export const getServiceById = async (req, res, next) => {
   }
 };
 
+/**
+ * Updates a service by its ID.
+ * 
+ * Enforces authorization: Business users can only update their own services.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
+ */
 export const updateService = async (req, res, next) => {
   try {
     // קודם מביאים את השירות כדי לבדוק הרשאות
@@ -96,6 +134,16 @@ export const updateService = async (req, res, next) => {
   }
 };
 
+/**
+ * Deletes a service by its ID.
+ * 
+ * Enforces authorization: Business users can only delete their own services.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
+ */
 export const deleteService = async (req, res, next) => {
   try {
     const existing = await Service.findById(req.params.id).lean();

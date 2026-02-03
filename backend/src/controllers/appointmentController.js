@@ -4,7 +4,16 @@ import Employee from "../models/Employee.js"; // Discriminator for users with ro
 import Service from "../models/Service.js";
 
 /**
- * Creates a new appointment after performing security and business logic validations.
+ * Creates a new appointment.
+ * 
+ * Validates the request body, checks for user authorization (must be a client),
+ * ensures all related entities (business, employee, service) exist and valid relationships.
+ * Prevents double booking by checking for overlapping appointments.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const createAppointment = async (req, res, next) => {
   try {
@@ -85,7 +94,15 @@ export const createAppointment = async (req, res, next) => {
 };
 
 /**
- * Fetches all appointments for a specific business with optional query filters.
+ * Fetches all appointments for a specific business.
+ * 
+ * Supports filtering by date range (`from`, `to`), specific employee (`employeeId`), and status.
+ * Enforces access control: Business owners and employees can only access their own business's data.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const getBusinessAppointments = async (req, res, next) => {
   try {
@@ -128,7 +145,16 @@ export const getBusinessAppointments = async (req, res, next) => {
 };
 
 /**
- * Fetches appointments related to the logged-in user (Client's bookings or Employee's tasks).
+ * Fetches appointments for the currently logged-in user.
+ * 
+ * If the user is a client, returns appointments where they are the client.
+ * If the user is an employee, returns appointments where they are the provider.
+ * Supports filtering by date range (`from`, `to`) and status.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const getMyAppointments = async (req, res, next) => {
   try {
@@ -167,7 +193,16 @@ export const getMyAppointments = async (req, res, next) => {
 };
 
 /**
- * Updates the status of an appointment (e.g., cancelling or marking as completed).
+ * Updates the status of an appointment (e.g., to "cancelled" or "completed").
+ * 
+ * Enforces state transition rules based on the user's role:
+ * - Clients can only cancel their own appointments.
+ * - Employees can complete or cancel their own appointments.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const updateAppointmentStatus = async (req, res, next) => {
   try {
@@ -210,6 +245,11 @@ export const updateAppointmentStatus = async (req, res, next) => {
 
 /**
  * Hard-deletes an appointment from the database.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const deleteAppointment = async (req, res, next) => {
   try {

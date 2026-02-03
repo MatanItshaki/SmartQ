@@ -11,9 +11,15 @@ const pickDefined = (obj) =>
   Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== undefined));
 
 /**
- * @desc    Create a new business
- * @route   POST /api/business
- * @access  Private (Admin)
+ * Creates a new business.
+ * 
+ * Validates input and checks for duplicate business names.
+ * requires Admin role.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const createBusiness = async (req, res, next) => {
   try {
@@ -47,9 +53,12 @@ export const createBusiness = async (req, res, next) => {
 };
 
 /**
- * @desc    Get all businesses
- * @route   GET /api/business
- * @access  Public/Private
+ * Retrieves all businesses.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const getAllBusinesses = async (req, res, next) => {
   try {
@@ -62,9 +71,12 @@ export const getAllBusinesses = async (req, res, next) => {
 };
 
 /**
- * @desc    Get a single business by ID
- * @route   GET /api/business/:id
- * @access  Public/Private
+ * Retrieves a single business by its ID.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const getBusinessById = async (req, res, next) => {
   try {
@@ -78,9 +90,16 @@ export const getBusinessById = async (req, res, next) => {
 };
 
 /**
- * @desc    Update business details
- * @route   PATCH/PUT /api/business/:id
- * @access  Private (Admin or Business Owner)
+ * Updates business details.
+ * 
+ * Enforces authorization:
+ * - Admin can update any business.
+ * - Business owners can only update their own business.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const updateBusiness = async (req, res, next) => {
   try {
@@ -115,9 +134,16 @@ export const updateBusiness = async (req, res, next) => {
 };
 
 /**
- * @desc    Delete a business
- * @route   DELETE /api/business/:id
- * @access  Private (Admin or Business Owner)
+ * Deletes a business.
+ * 
+ * Enforces authorization:
+ * - Admin can delete any business.
+ * - Business owners can only delete their own business.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const deleteBusiness = async (req, res, next) => {
   try {
@@ -139,9 +165,12 @@ export const deleteBusiness = async (req, res, next) => {
 };
 
 /**
- * @desc    Get employees for a business
- * @route   GET /api/business/:id/employees
- * @access  Public (or Private if needed)
+ * Retrieves all employees associated with a specific business.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const getEmployeesByBusiness = async (req, res, next) => {
   try {
