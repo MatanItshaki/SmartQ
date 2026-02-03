@@ -5,6 +5,8 @@ import Service from "../src/models/Service.js";
 import Employee from "../src/models/Employee.js"; // Ensure this model exists or use User with role='employee'
 import bcrypt from "bcryptjs";
 
+// Script: Seeds demo businesses, employees, and services into the database
+// Connects to MongoDB, clears existing data, and inserts sample records
 async function seedData() {
   try {
     await mongoose.connect(process.env.MONGO_URI);

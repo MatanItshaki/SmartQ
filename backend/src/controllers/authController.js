@@ -8,8 +8,12 @@ import Employee from "../models/Employee.js";
 import BusinessOwner from "../models/BusinessOwner.js";
 
 /**
- * Generates a Signed JWT Token
- * Payload includes: user ID, role, and business link.
+ * Generates a signed JWT Token.
+ * 
+ * Payload includes the user's ID, role, and associated business ID (if any).
+ * 
+ * @param {object} user - The user object.
+ * @returns {string} Signed JWT string.
  */
 const signToken = (user) => {
   if (!process.env.JWT_SECRET) {
@@ -28,9 +32,15 @@ const signToken = (user) => {
 };
 
 /**
- * Standardizes the Auth Response
- * Sends the token and non-sensitive user data to the client.
- * Supports both JSON response and secure HttpOnly cookies.
+ * Standardizes the Authentication Response.
+ * 
+ * Sends the JWT token and a sanitized user object (excluding sensitive data) to the client.
+ * Can optionally set an HttpOnly cookie if configured.
+ * 
+ * @param {import("express").Response} res - Express response object.
+ * @param {object} user - The user object.
+ * @param {number} [statusCode=200] - HTTP status code.
+ * @returns {import("express").Response}
  */
 const sendAuthResponse = (res, user, statusCode = 200) => {
   const token = signToken(user);
@@ -61,8 +71,15 @@ const sendAuthResponse = (res, user, statusCode = 200) => {
 };
 
 /**
- * POST /api/auth/register
- * Public route to register new customers (Clients).
+ * Registers a new Client user.
+ * 
+ * Validates input, checks for existing email, hashes the password, and creates a new Client document.
+ * Returns a 201 response with the new user and token.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const register = async (req, res, next) => {
   try {
@@ -97,8 +114,15 @@ export const register = async (req, res, next) => {
 };
 
 /**
- * POST /api/auth/login
- * Unified login for all roles.
+ * Logs in a user.
+ * 
+ * Authenticates credentials for any user role. Verifies the password against the stored hash.
+ * Returns a 200 response with the user and token.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const login = async (req, res, next) => {
   try {
@@ -132,8 +156,14 @@ export const login = async (req, res, next) => {
 };
 
 /**
- * GET /api/auth/me
- * Returns current logged-in user details.
+ * Retrieves the currently logged-in user's details.
+ * 
+ * Uses the user ID attached to the request by the auth middleware.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const me = async (req, res, next) => {
   try {
@@ -151,8 +181,13 @@ export const me = async (req, res, next) => {
 };
 
 /**
- * POST /api/auth/logout
- * Clears the auth cookie.
+ * Logs out the user.
+ * 
+ * Clears the authentication cookie if it exists.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @returns {Promise<void>}
  */
 export const logout = async (req, res) => {
   res.clearCookie("token", {
@@ -164,8 +199,14 @@ export const logout = async (req, res) => {
 };
 
 /**
- * POST /api/auth/register-employee
- * Protected route to create employees under a business.
+ * Registers a new Employee under a specific Business.
+ * 
+ * Verifies that the target business exists before creating the employee.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const registerEmployee = async (req, res, next) => {
   try {
@@ -202,8 +243,14 @@ export const registerEmployee = async (req, res, next) => {
 };
 
 /**
- * POST /api/auth/register-business-owner
- * Creates a user with business management privileges.
+ * Registers a new Business Owner.
+ * 
+ * Verifies that the target business exists before creating the owner.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const registerBusinessOwner = async (req, res, next) => {
   try {

@@ -2,6 +2,14 @@ import mongoose from "mongoose";
 
 const { Schema, model } = mongoose;
 
+/**
+ * EmployeeService Schema
+ * 
+ * Link table associating an Employee with a Service they can perform.
+ * 
+ * @property {ObjectId} employee - Reference to the Employee (User).
+ * @property {ObjectId} service - Reference to the Service.
+ */
 const employeeServiceSchema = new Schema(
   {
     employee: {

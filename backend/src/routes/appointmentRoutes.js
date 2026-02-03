@@ -73,10 +73,10 @@ const idParamSchema = Joi.object({
  */
 router.post(
   "/",
-  protect,
-  requireRole("client", "admin"),
-  validate(createAppointmentSchema),
-  createAppointment
+  protect, // 1. Authenticate Request
+  requireRole("client", "admin"), // 2. Authorize: Only Clients/Admins
+  validate(createAppointmentSchema), // 3. Validate Body
+  createAppointment // 4. Handle Logic
 );
 
 /**
@@ -86,10 +86,10 @@ router.post(
  */
 router.get(
   "/me",
-  protect,
-  requireRole("client", "employee", "admin"),
-  validate(myAppointmentsQuerySchema, "query"), // Validates data in req.query
-  getMyAppointments
+  protect, // 1. Authenticate Request
+  requireRole("client", "employee", "admin"), // 2. Authorize User
+  validate(myAppointmentsQuerySchema, "query"), // 3. Validate Query Params
+  getMyAppointments // 4. Handle Logic
 );
 
 /**
@@ -99,10 +99,10 @@ router.get(
  */
 router.get(
   "/business/:businessId",
-  protect,
-  requireRole("business", "admin", "employee"),
-  validate(businessAppointmentsQuerySchema, "query"),
-  getBusinessAppointments
+  protect, // 1. Authenticate Request
+  requireRole("business", "admin", "employee"), // 2. Authorize
+  validate(businessAppointmentsQuerySchema, "query"), // 3. Validate Query Params
+  getBusinessAppointments // 4. Handle Logic
 );
 
 /**
@@ -112,11 +112,11 @@ router.get(
  */
 router.patch(
   "/:id/status",
-  protect,
-  requireRole("client", "business", "admin", "employee"),
-  validate(idParamSchema, "params"), // Validates the :id in URL
-  validate(updateStatusSchema),     // Validates the status in Body
-  updateAppointmentStatus
+  protect, // 1. Authenticate Request
+  requireRole("client", "business", "admin", "employee"), // 2. Authorize
+  validate(idParamSchema, "params"), // 3. Validate ID
+  validate(updateStatusSchema),     // 4. Validate Status Body
+  updateAppointmentStatus // 5. Handle Logic
 );
 
 /**
@@ -126,10 +126,10 @@ router.patch(
  */
 router.delete(
   "/:id",
-  protect,
-  requireRole("business", "admin"),
-  validate(idParamSchema, "params"),
-  deleteAppointment
+  protect, // 1. Authenticate Request
+  requireRole("business", "admin"), // 2. Authorize: Business/Admin only
+  validate(idParamSchema, "params"), // 3. Validate ID
+  deleteAppointment // 4. Handle Logic
 );
 
 export default router;

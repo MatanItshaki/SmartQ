@@ -4,9 +4,12 @@ import User from "../models/User.js";
 import Client from "../models/Client.js";
 
 /**
- * @desc    Get profile of the logged-in user
- * @route   GET /api/clients/me
- * @access  Private (Self)
+ * Retrieves the profile of the currently logged-in user.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const getMyProfile = async (req, res, next) => {
   try {
@@ -24,9 +27,12 @@ export const getMyProfile = async (req, res, next) => {
 };
 
 /**
- * @desc    Update profile fields (Name, Phone)
- * @route   PATCH /api/clients/me
- * @access  Private (Self)
+ * Updates profile fields (Name, Phone) for the logged-in user.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const updateMyProfile = async (req, res, next) => {
   try {
@@ -54,9 +60,14 @@ export const updateMyProfile = async (req, res, next) => {
 };
 
 /**
- * @desc    Securely change user password
- * @route   PATCH /api/clients/me/password
- * @access  Private (Self)
+ * Securely changes the user's password.
+ * 
+ * Verifies the current password before applying the new one.
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const changeMyPassword = async (req, res, next) => {
   try {
@@ -84,9 +95,12 @@ export const changeMyPassword = async (req, res, next) => {
 };
 
 /**
- * @desc    Admin only: Get all users with client role
- * @route   GET /api/clients
- * @access  Private (Admin)
+ * Retrieves all users with the 'client' role (Admin only).
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const getAllClients = async (req, res, next) => {
   try {
@@ -102,9 +116,12 @@ export const getAllClients = async (req, res, next) => {
 };
 
 /**
- * @desc    Admin only: Get details of a specific client
- * @route   GET /api/clients/:id
- * @access  Private (Admin)
+ * Retrieves details of a specific client by ID (Admin only).
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const getClientById = async (req, res, next) => {
   try {
@@ -121,9 +138,12 @@ export const getClientById = async (req, res, next) => {
 };
 
 /**
- * @desc    Admin only: Delete a client account
- * @route   DELETE /api/clients/:id
- * @access  Private (Admin)
+ * Deletes a client account (Admin only).
+ * 
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
  */
 export const deleteClientById = async (req, res, next) => {
   try {

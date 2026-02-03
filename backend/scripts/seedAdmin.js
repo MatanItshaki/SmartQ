@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import Admin from "../src/models/Admin.js";
 
+// Script: Seeds an admin user in the database
+// Reads admin credentials from environment, checks if admin exists, and creates if not
 async function seedAdmin() {
   await mongoose.connect(process.env.MONGO_URI);
 
@@ -38,4 +40,4 @@ const admin = await Admin.create({
 seedAdmin().catch((err) => {
   console.error(err);
   process.exit(1);
-}); 
+});

@@ -1,4 +1,16 @@
 // middleware/errorMiddleware.js
+/**
+ * Global error handling middleware.
+ * 
+ * Catches errors passed from other middleware/routes and sends a formatted JSON response.
+ * It handles specific Mongoose errors (CastError, duplicate key, ValidationError) and JWT errors.
+ * 
+ * @param {Error} err - The error object.
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object.
+ * @param {import("express").NextFunction} next - Express next middleware function.
+ * @returns {void}
+ */
 const errorMiddleware = (err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   let message = err.message || "Internal Server Error";

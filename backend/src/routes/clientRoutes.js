@@ -52,7 +52,11 @@ const idParamSchema = Joi.object({
  * @desc    Get the current user's profile
  * @access  Private (Client / Admin)
  */
-router.get("/me", protect, requireRole("client", "admin"), getMyProfile);
+router.get("/me", 
+  protect, // 1. Authenticate 
+  requireRole("client", "admin"), // 2. Authorize
+  getMyProfile // 3. Return Profile
+);
 
 /**
  * @route   PATCH /api/clients/me
@@ -61,10 +65,10 @@ router.get("/me", protect, requireRole("client", "admin"), getMyProfile);
  */
 router.patch(
   "/me",
-  protect,
-  requireRole("client", "admin"),
-  validate(updateMeSchema),
-  updateMyProfile
+  protect, // 1. Authenticate
+  requireRole("client", "admin"), // 2. Authorize
+  validate(updateMeSchema), // 3. Validate Updates
+  updateMyProfile // 4. Update Profile
 );
 
 /**
@@ -74,10 +78,10 @@ router.patch(
  */
 router.patch(
   "/me/password",
-  protect,
-  requireRole("client", "admin"),
-  validate(changePasswordSchema),
-  changeMyPassword
+  protect, // 1. Authenticate
+  requireRole("client", "admin"), // 2. Authorize
+  validate(changePasswordSchema), // 3. Validate Passwords
+  changeMyPassword // 4. Update Password
 );
 
 // --------------------
@@ -89,7 +93,11 @@ router.patch(
  * @desc    Get a list of all registered clients
  * @access  Private (Admin only)
  */
-router.get("/", protect, requireRole("admin"), getAllClients);
+router.get("/", 
+  protect, // 1. Authenticate
+  requireRole("admin"), // 2. Authorize: Admin only
+  getAllClients // 3. Fetch All
+);
 
 /**
  * @route   GET /api/clients/:id
@@ -98,10 +106,10 @@ router.get("/", protect, requireRole("admin"), getAllClients);
  */
 router.get(
   "/:id",
-  protect,
-  requireRole("admin"),
-  validate(idParamSchema, "params"),
-  getClientById
+  protect, // 1. Authenticate
+  requireRole("admin"), // 2. Authorize
+  validate(idParamSchema, "params"), // 3. Validate ID
+  getClientById // 4. Fetch Client
 );
 
 /**
@@ -111,10 +119,10 @@ router.get(
  */
 router.delete(
   "/:id",
-  protect,
-  requireRole("admin"),
-  validate(idParamSchema, "params"),
-  deleteClientById
+  protect, // 1. Authenticate
+  requireRole("admin"), // 2. Authorize
+  validate(idParamSchema, "params"), // 3. Validate ID
+  deleteClientById // 4. Delete Client
 );
 
 export default router;
