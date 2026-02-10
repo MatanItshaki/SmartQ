@@ -48,7 +48,7 @@ export const businessAPI = {
 };
 
 export const serviceAPI = {
-  getByBusiness: (businessId) => api.get(`/services`, { params: { businessId } }),
+  getByBusiness: (businessId) => api.get(`/services`, { params: { business: businessId } }),
 };
 
 export const appointmentAPI = {
