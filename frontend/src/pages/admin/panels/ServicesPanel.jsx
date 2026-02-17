@@ -49,12 +49,7 @@ export default function ServicesPanel() {
     const fetchServices = async () => {
         try {
             const res = await serviceAPI.getByBusiness('');
-            // The existing service API uses params, calling getAllServices when no business is specified
-            const allRes = await fetch('http://localhost:5000/api/services', {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-            });
-            const allData = await allRes.json();
-            setServices(allData.data || []);
+            setServices(res.data.data || []);
         } catch (err) {
             console.error('Failed to load services', err);
         } finally {
