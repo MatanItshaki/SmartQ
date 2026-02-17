@@ -2,7 +2,7 @@ import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Chip } from '@mui/material';
 import { useNavigate, Link } from 'react-router-dom';
 import useAuthStore from '../store/useAuthStore';
-import { PowerSettingsNew, Dashboard as DashboardIcon, AdminPanelSettings as AdminIcon } from '@mui/icons-material';
+import { PowerSettingsNew, Dashboard as DashboardIcon, AdminPanelSettings as AdminIcon, Business as BusinessIcon } from '@mui/icons-material';
 
 export default function Navbar() {
     const { isAuthenticated, user, logout } = useAuthStore();
@@ -14,9 +14,10 @@ export default function Navbar() {
     };
 
     const isAdmin = user?.role === 'admin';
-    const dashboardPath = isAdmin ? '/admin' : '/dashboard';
-    const dashboardLabel = isAdmin ? 'Admin Panel' : 'Dashboard';
-    const DashIcon = isAdmin ? AdminIcon : DashboardIcon;
+    const isBusiness = user?.role === 'business';
+    const dashboardPath = isAdmin ? '/admin' : isBusiness ? '/business' : '/dashboard';
+    const dashboardLabel = isAdmin ? 'Admin Panel' : isBusiness ? 'My Business' : 'Dashboard';
+    const DashIcon = isAdmin ? AdminIcon : isBusiness ? BusinessIcon : DashboardIcon;
 
     return (
         <AppBar position="static" elevation={0}>
@@ -81,6 +82,20 @@ export default function Navbar() {
                                             fontSize: '0.7rem',
                                             fontWeight: 700,
                                             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                            color: '#fff',
+                                            display: { xs: 'none', sm: 'flex' },
+                                        }}
+                                    />
+                                )}
+                                {isBusiness && (
+                                    <Chip
+                                        label="Owner"
+                                        size="small"
+                                        sx={{
+                                            height: 22,
+                                            fontSize: '0.7rem',
+                                            fontWeight: 700,
+                                            background: 'linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%)',
                                             color: '#fff',
                                             display: { xs: 'none', sm: 'flex' },
                                         }}

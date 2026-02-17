@@ -88,4 +88,28 @@ export const adminAPI = {
   registerBusinessOwner: (data) => api.post('/auth/register-business', data),
 };
 
+// Business Owner API endpoints
+export const ownerAPI = {
+  // Dashboard stats
+  getStats: () => api.get('/owner/stats'),
+
+  // Business info
+  getMyBusiness: () => api.get('/owner/my-business'),
+  updateMyBusiness: (data) => api.patch('/owner/my-business', data),
+
+  // Employees
+  getEmployees: () => api.get('/owner/employees'),
+  removeEmployee: (id) => api.delete(`/owner/employees/${id}`),
+
+  // Services
+  getServices: () => api.get('/owner/services'),
+  createService: (data) => api.post('/owner/services', data),
+  updateService: (id, data) => api.put(`/owner/services/${id}`, data),
+  deleteService: (id) => api.delete(`/owner/services/${id}`),
+
+  // Appointments
+  getAppointments: (params) => api.get('/owner/appointments', { params }),
+  updateAppointmentStatus: (id, status) => api.patch(`/owner/appointments/${id}/status`, { status }),
+};
+
 export default api;

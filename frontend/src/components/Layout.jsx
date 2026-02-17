@@ -13,13 +13,13 @@ export default function Layout({ children }) {
     }, [checkAuth]);
 
     // Admin dashboard has its own layout with sidebar — skip Container wrapping
-    const isAdminRoute = location.pathname.startsWith('/admin');
+    const isFullWidthRoute = location.pathname.startsWith('/admin') || location.pathname.startsWith('/business');
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <CssBaseline />
             <Navbar />
-            {isAdminRoute ? (
+            {isFullWidthRoute ? (
                 <Box component="main" sx={{ flexGrow: 1 }}>
                     {children}
                 </Box>

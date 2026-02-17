@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import BookAppointment from './pages/BookAppointment';
 import NotFound from './pages/NotFound';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import BusinessDashboard from './pages/business/BusinessDashboard';
 import Layout from './components/Layout';
 import useAuthStore from './store/useAuthStore';
 
@@ -13,8 +14,6 @@ import useAuthStore from './store/useAuthStore';
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuthStore();
 
-  // Note: logic might need adjustment if isLoading is true initially
-  // straightforward check for token in store
   if (!isAuthenticated && !isLoading) {
     return <Navigate to="/login" replace />;
   }
@@ -29,7 +28,6 @@ const AdminRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // If user data is loaded and they're not admin, redirect to regular dashboard
   if (user && user.role !== 'admin') {
     return <Navigate to="/dashboard" replace />;
   }
@@ -37,12 +35,31 @@ const AdminRoute = ({ children }) => {
   return children;
 };
 
-// Smart Dashboard Redirect — sends admins to admin dashboard, clients to regular dashboard
+// Business Owner Route Wrapper
+const BusinessRoute = ({ children }) => {
+  const { isAuthenticated, isLoading, user } = useAuthStore();
+
+  if (!isAuthenticated && !isLoading) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user && user.role !== 'business') {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+};
+
+// Smart Dashboard Redirect — routes each role to their own dashboard
 const SmartDashboardRedirect = () => {
   const { user } = useAuthStore();
 
   if (user?.role === 'admin') {
     return <Navigate to="/admin" replace />;
+  }
+
+  if (user?.role === 'business') {
+    return <Navigate to="/business" replace />;
   }
 
   return <Dashboard />;
@@ -70,6 +87,14 @@ export default function AppRoutes() {
               <AdminRoute>
                 <AdminDashboard />
               </AdminRoute>
+            }
+          />
+          <Route
+            path="/business"
+            element={
+              <BusinessRoute>
+                <BusinessDashboard />
+              </BusinessRoute>
             }
           />
           <Route
