@@ -57,4 +57,35 @@ export const appointmentAPI = {
   cancel: (id) => api.patch(`/appointments/${id}/status`, { status: "cancelled" }),
 };
 
+// Admin-specific API endpoints
+export const adminAPI = {
+  // Dashboard stats
+  getStats: () => api.get('/admin/stats'),
+
+  // User management
+  getAllUsers: (role) => api.get('/admin/users', { params: role ? { role } : {} }),
+  getUserById: (id) => api.get(`/admin/users/${id}`),
+  toggleUserStatus: (id) => api.patch(`/admin/users/${id}/toggle-status`),
+  deleteUser: (id) => api.delete(`/admin/users/${id}`),
+
+  // Business management (already exists via businessAPI but admin-specific routes)
+  createBusiness: (data) => api.post('/business', data),
+  updateBusiness: (id, data) => api.patch(`/business/${id}`, data),
+  deleteBusiness: (id) => api.delete(`/business/${id}`),
+
+  // Service management
+  createService: (data) => api.post('/services', data),
+  updateService: (id, data) => api.put(`/services/${id}`, data),
+  deleteService: (id) => api.delete(`/services/${id}`),
+
+  // Appointment management
+  getAllAppointments: (params) => api.get('/admin/appointments', { params }),
+  updateAppointmentStatus: (id, status) => api.patch(`/appointments/${id}/status`, { status }),
+  deleteAppointment: (id) => api.delete(`/appointments/${id}`),
+
+  // Employee / Business Owner registration
+  registerEmployee: (data) => api.post('/auth/register-employee', data),
+  registerBusinessOwner: (data) => api.post('/auth/register-business', data),
+};
+
 export default api;

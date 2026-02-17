@@ -1,8 +1,8 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, Chip } from '@mui/material';
 import { useNavigate, Link } from 'react-router-dom';
 import useAuthStore from '../store/useAuthStore';
-import { PowerSettingsNew, Dashboard as DashboardIcon } from '@mui/icons-material';
+import { PowerSettingsNew, Dashboard as DashboardIcon, AdminPanelSettings as AdminIcon } from '@mui/icons-material';
 
 export default function Navbar() {
     const { isAuthenticated, user, logout } = useAuthStore();
@@ -12,6 +12,11 @@ export default function Navbar() {
         logout();
         navigate('/login');
     };
+
+    const isAdmin = user?.role === 'admin';
+    const dashboardPath = isAdmin ? '/admin' : '/dashboard';
+    const dashboardLabel = isAdmin ? 'Admin Panel' : 'Dashboard';
+    const DashIcon = isAdmin ? AdminIcon : DashboardIcon;
 
     return (
         <AppBar position="static" elevation={0}>
@@ -45,8 +50,8 @@ export default function Navbar() {
                             <Button
                                 color="inherit"
                                 component={Link}
-                                to="/dashboard"
-                                startIcon={<DashboardIcon />}
+                                to={dashboardPath}
+                                startIcon={<DashIcon />}
                                 sx={{
                                     borderRadius: '10px',
                                     px: 2,
@@ -55,18 +60,33 @@ export default function Navbar() {
                                     },
                                 }}
                             >
-                                Dashboard
+                                {dashboardLabel}
                             </Button>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    color: 'text.secondary',
-                                    px: 1,
-                                    display: { xs: 'none', sm: 'block' },
-                                }}
-                            >
-                                {user?.name}
-                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1 }}>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        color: 'text.secondary',
+                                        display: { xs: 'none', sm: 'block' },
+                                    }}
+                                >
+                                    {user?.name}
+                                </Typography>
+                                {isAdmin && (
+                                    <Chip
+                                        label="Admin"
+                                        size="small"
+                                        sx={{
+                                            height: 22,
+                                            fontSize: '0.7rem',
+                                            fontWeight: 700,
+                                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                            color: '#fff',
+                                            display: { xs: 'none', sm: 'flex' },
+                                        }}
+                                    />
+                                )}
+                            </Box>
                             <Button
                                 color="inherit"
                                 onClick={handleLogout}
@@ -121,4 +141,3 @@ export default function Navbar() {
         </AppBar>
     );
 }
-
