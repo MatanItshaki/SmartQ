@@ -20,32 +20,24 @@ export default function Navbar() {
     const DashIcon = isAdmin ? AdminIcon : isBusiness ? BusinessIcon : DashboardIcon;
 
     return (
-        <AppBar position="static" elevation={0}>
-            <Toolbar sx={{ py: 1 }}>
+        <AppBar position="static" elevation={1}>
+            <Toolbar>
                 <Typography
-                    variant="h5"
+                    variant="h6"
                     component="div"
-                    sx={{
-                        flexGrow: 1,
-                        fontWeight: 700,
-                        letterSpacing: '-0.02em',
-                    }}
+                    sx={{ flexGrow: 1, fontWeight: 600 }}
                 >
                     <Link
                         to="/"
                         style={{
                             textDecoration: 'none',
-                            background: 'linear-gradient(135deg, #667eea 0%, #f093fb 100%)',
-                            backgroundClip: 'text',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            transition: 'all 0.3s ease',
+                            color: '#90caf9',
                         }}
                     >
                         SmartQ
                     </Link>
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                     {isAuthenticated ? (
                         <>
                             <Button
@@ -53,67 +45,39 @@ export default function Navbar() {
                                 component={Link}
                                 to={dashboardPath}
                                 startIcon={<DashIcon />}
-                                sx={{
-                                    borderRadius: '10px',
-                                    px: 2,
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                                    },
-                                }}
                             >
                                 {dashboardLabel}
                             </Button>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1 }}>
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        color: 'text.secondary',
-                                        display: { xs: 'none', sm: 'block' },
-                                    }}
-                                >
-                                    {user?.name}
-                                </Typography>
-                                {isAdmin && (
-                                    <Chip
-                                        label="Admin"
-                                        size="small"
-                                        sx={{
-                                            height: 22,
-                                            fontSize: '0.7rem',
-                                            fontWeight: 700,
-                                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                            color: '#fff',
-                                            display: { xs: 'none', sm: 'flex' },
-                                        }}
-                                    />
-                                )}
-                                {isBusiness && (
-                                    <Chip
-                                        label="Owner"
-                                        size="small"
-                                        sx={{
-                                            height: 22,
-                                            fontSize: '0.7rem',
-                                            fontWeight: 700,
-                                            background: 'linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%)',
-                                            color: '#fff',
-                                            display: { xs: 'none', sm: 'flex' },
-                                        }}
-                                    />
-                                )}
-                            </Box>
+                            <Typography
+                                variant="body2"
+                                sx={{
+                                    color: 'text.secondary',
+                                    display: { xs: 'none', sm: 'block' },
+                                    mx: 1,
+                                }}
+                            >
+                                {user?.name}
+                            </Typography>
+                            {isAdmin && (
+                                <Chip
+                                    label="Admin"
+                                    size="small"
+                                    color="primary"
+                                    sx={{ display: { xs: 'none', sm: 'flex' } }}
+                                />
+                            )}
+                            {isBusiness && (
+                                <Chip
+                                    label="Owner"
+                                    size="small"
+                                    color="success"
+                                    sx={{ display: { xs: 'none', sm: 'flex' } }}
+                                />
+                            )}
                             <Button
-                                color="inherit"
+                                color="error"
                                 onClick={handleLogout}
                                 startIcon={<PowerSettingsNew />}
-                                sx={{
-                                    borderRadius: '10px',
-                                    px: 2,
-                                    background: 'rgba(244, 63, 94, 0.1)',
-                                    '&:hover': {
-                                        background: 'rgba(244, 63, 94, 0.2)',
-                                    },
-                                }}
                             >
                                 Logout
                             </Button>
@@ -124,13 +88,6 @@ export default function Navbar() {
                                 color="inherit"
                                 component={Link}
                                 to="/login"
-                                sx={{
-                                    borderRadius: '10px',
-                                    px: 3,
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                                    },
-                                }}
                             >
                                 Login
                             </Button>
@@ -138,14 +95,6 @@ export default function Navbar() {
                                 variant="contained"
                                 component={Link}
                                 to="/register"
-                                sx={{
-                                    borderRadius: '10px',
-                                    px: 3,
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                    '&:hover': {
-                                        background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
-                                    },
-                                }}
                             >
                                 Sign Up
                             </Button>

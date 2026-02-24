@@ -109,7 +109,7 @@ export default function BusinessesPanel() {
             {/* Header */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
                 <Box>
-                    <Typography variant="h4" sx={{ fontWeight: 800, background: 'linear-gradient(135deg, #667eea 0%, #f093fb 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', mb: 0.5 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5 }}>
                         Business Management
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -120,14 +120,6 @@ export default function BusinessesPanel() {
                     variant="contained"
                     startIcon={<AddIcon />}
                     onClick={() => handleOpenDialog()}
-                    sx={{
-                        borderRadius: '12px',
-                        px: 3,
-                        py: 1.2,
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        fontWeight: 600,
-                        '&:hover': { background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)' },
-                    }}
                 >
                     Add Business
                 </Button>
@@ -137,20 +129,9 @@ export default function BusinessesPanel() {
             <TextField
                 placeholder="Search businesses..."
                 size="small"
-                fullWidth
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                InputProps={{
-                    startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                }}
-                sx={{
-                    mb: 3,
-                    maxWidth: 400,
-                    '& .MuiOutlinedInput-root': {
-                        borderRadius: '12px',
-                        background: 'rgba(255,255,255,0.04)',
-                    },
-                }}
+                sx={{ mb: 3, maxWidth: 400 }}
             />
 
             {/* Table */}
@@ -186,10 +167,7 @@ export default function BusinessesPanel() {
                             filtered.map((b) => (
                                 <TableRow key={b._id} sx={{ '&:hover': { background: 'rgba(255,255,255,0.03)' }, '& td': { borderBottomColor: 'rgba(255,255,255,0.05)' } }}>
                                     <TableCell>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                            <Box sx={{ width: 36, height: 36, borderRadius: '10px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <BusinessIcon sx={{ color: '#fff', fontSize: 18 }} />
-                                            </Box>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                             <Typography sx={{ fontWeight: 600 }}>{b.name}</Typography>
                                         </Box>
                                     </TableCell>
@@ -221,7 +199,7 @@ export default function BusinessesPanel() {
             </TableContainer>
 
             {/* Create/Edit Dialog */}
-            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: '20px', background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)' } }}>
+            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ fontWeight: 700, pb: 1 }}>
                     {editingBusiness ? 'Edit Business' : 'Create New Business'}
                 </DialogTitle>
@@ -239,7 +217,6 @@ export default function BusinessesPanel() {
                         variant="contained"
                         onClick={handleSave}
                         disabled={!formData.name.trim()}
-                        sx={{ borderRadius: '12px', px: 3, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', '&:hover': { background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)' } }}
                     >
                         {editingBusiness ? 'Save Changes' : 'Create'}
                     </Button>

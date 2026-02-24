@@ -10,8 +10,6 @@ import {
     Typography,
     useMediaQuery,
     IconButton,
-    Divider,
-    Avatar,
 } from '@mui/material';
 import {
     Dashboard as DashboardIcon,
@@ -19,7 +17,6 @@ import {
     MiscellaneousServices as ServicesIcon,
     CalendarMonth as CalendarIcon,
     Menu as MenuIcon,
-    Business as BusinessIcon,
     Settings as SettingsIcon,
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
@@ -32,7 +29,7 @@ import OwnerServicesPanel from './panels/OwnerServicesPanel';
 import OwnerAppointmentsPanel from './panels/OwnerAppointmentsPanel';
 import OwnerSettingsPanel from './panels/OwnerSettingsPanel';
 
-const DRAWER_WIDTH = 280;
+const DRAWER_WIDTH = 240;
 
 const navItems = [
     { key: 'overview', label: 'Overview', icon: <DashboardIcon /> },
@@ -61,56 +58,19 @@ export default function BusinessDashboard() {
     };
 
     const drawerContent = (
-        <Box
-            sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                background: 'linear-gradient(180deg, rgba(20,184,166,0.08) 0%, rgba(6,182,212,0.04) 50%, transparent 100%)',
-            }}
-        >
-            {/* Logo Section */}
-            <Box sx={{ p: 3, pb: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Box
-                        sx={{
-                            width: 42,
-                            height: 42,
-                            borderRadius: '12px',
-                            background: 'linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 4px 15px rgba(20,184,166,0.3)',
-                        }}
-                    >
-                        <BusinessIcon sx={{ color: '#fff', fontSize: 22 }} />
-                    </Box>
-                    <Box>
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                fontWeight: 800,
-                                fontSize: '1.1rem',
-                                background: 'linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%)',
-                                backgroundClip: 'text',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                            }}
-                        >
-                            Business Panel
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
-                            SmartQ Management
-                        </Typography>
-                    </Box>
-                </Box>
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            {/* Header */}
+            <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    Business Panel
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    {user?.name || 'Business Owner'}
+                </Typography>
             </Box>
 
-            <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mx: 2 }} />
-
             {/* Navigation */}
-            <List sx={{ px: 2, py: 2, flexGrow: 1 }}>
+            <List sx={{ px: 1, py: 1, flexGrow: 1 }}>
                 {navItems.map((item) => (
                     <ListItem key={item.key} disablePadding sx={{ mb: 0.5 }}>
                         <ListItemButton
@@ -119,66 +79,16 @@ export default function BusinessDashboard() {
                                 setActivePanel(item.key);
                                 if (isMobile) setMobileOpen(false);
                             }}
-                            sx={{
-                                borderRadius: '12px',
-                                py: 1.3,
-                                px: 2,
-                                transition: 'all 0.2s ease',
-                                '&.Mui-selected': {
-                                    background: 'linear-gradient(135deg, rgba(20,184,166,0.15) 0%, rgba(6,182,212,0.1) 100%)',
-                                    borderLeft: '3px solid #14b8a6',
-                                    '& .MuiListItemIcon-root': { color: '#14b8a6' },
-                                    '& .MuiListItemText-primary': { color: '#fff', fontWeight: 700 },
-                                },
-                                '&:hover': {
-                                    background: 'rgba(255,255,255,0.05)',
-                                },
-                            }}
+                            sx={{ borderRadius: '6px' }}
                         >
-                            <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>
+                            <ListItemIcon sx={{ minWidth: 40 }}>
                                 {item.icon}
                             </ListItemIcon>
-                            <ListItemText
-                                primary={item.label}
-                                primaryTypographyProps={{
-                                    fontSize: '0.9rem',
-                                    fontWeight: 500,
-                                }}
-                            />
+                            <ListItemText primary={item.label} />
                         </ListItemButton>
                     </ListItem>
                 ))}
             </List>
-
-            <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mx: 2 }} />
-
-            {/* User Info Footer */}
-            <Box sx={{ p: 2.5 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Avatar
-                        sx={{
-                            width: 36,
-                            height: 36,
-                            background: 'linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%)',
-                            fontSize: '0.85rem',
-                            fontWeight: 700,
-                        }}
-                    >
-                        {user?.name?.charAt(0)?.toUpperCase() || 'B'}
-                    </Avatar>
-                    <Box sx={{ overflow: 'hidden' }}>
-                        <Typography
-                            variant="body2"
-                            sx={{ fontWeight: 600, fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
-                        >
-                            {user?.name || 'Business Owner'}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: '#14b8a6', fontWeight: 600 }}>
-                            Owner
-                        </Typography>
-                    </Box>
-                </Box>
-            </Box>
         </Box>
     );
 
@@ -193,13 +103,9 @@ export default function BusinessDashboard() {
                         bottom: 24,
                         right: 24,
                         zIndex: 1300,
-                        width: 56,
-                        height: 56,
-                        borderRadius: '16px',
-                        background: 'linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%)',
+                        bgcolor: 'primary.main',
                         color: '#fff',
-                        boxShadow: '0 8px 25px rgba(20,184,166,0.4)',
-                        '&:hover': { background: 'linear-gradient(135deg, #06b6d4 0%, #14b8a6 100%)' },
+                        '&:hover': { bgcolor: 'primary.dark' },
                     }}
                 >
                     <MenuIcon />
@@ -219,9 +125,7 @@ export default function BusinessDashboard() {
                         boxSizing: 'border-box',
                         position: isMobile ? 'fixed' : 'relative',
                         height: isMobile ? '100vh' : 'auto',
-                        background: 'rgba(15, 23, 42, 0.95)',
-                        backdropFilter: 'blur(20px)',
-                        borderRight: '1px solid rgba(255,255,255,0.06)',
+                        backgroundColor: '#1a1a2e',
                     },
                 }}
             >
@@ -233,9 +137,8 @@ export default function BusinessDashboard() {
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    p: { xs: 2, sm: 3, md: 4 },
+                    p: { xs: 2, sm: 3 },
                     minHeight: '100%',
-                    background: 'rgba(15, 23, 42, 0.4)',
                 }}
             >
                 {renderPanel()}

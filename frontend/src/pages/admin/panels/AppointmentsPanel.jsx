@@ -121,7 +121,7 @@ export default function AppointmentsPanel() {
         <Box>
             {/* Header */}
             <Box sx={{ mb: 4 }}>
-                <Typography variant="h4" sx={{ fontWeight: 800, background: 'linear-gradient(135deg, #667eea 0%, #f093fb 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', mb: 0.5 }}>
+                <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5 }}>
                     Appointment Management
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary' }}>

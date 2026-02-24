@@ -10,116 +10,22 @@ import {
     People as PeopleIcon,
     CalendarMonth as CalendarIcon,
     MiscellaneousServices as ServicesIcon,
-    TrendingUp as TrendingUpIcon,
     AttachMoney as MoneyIcon,
-    Today as TodayIcon,
-    CheckCircle as CheckIcon,
-    Cancel as CancelIcon,
-    Schedule as ScheduleIcon,
 } from '@mui/icons-material';
 import { ownerAPI } from '../../../services/api';
 
-const StatCard = ({ title, value, icon, gradient, subLabel, subValue }) => (
-    <Paper
-        elevation={0}
-        sx={{
-            p: 3,
-            borderRadius: '20px',
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            transition: 'all 0.3s ease',
-            position: 'relative',
-            overflow: 'hidden',
-            '&:hover': {
-                transform: 'translateY(-4px)',
-                background: 'rgba(255,255,255,0.07)',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-                borderColor: 'rgba(255,255,255,0.12)',
-            },
-            '&::before': {
-                content: '""',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '3px',
-                background: gradient,
-            },
-        }}
-    >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-            <Box>
-                <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.5 }}>
-                    {title}
-                </Typography>
-                <Typography variant="h3" sx={{ fontWeight: 800, fontSize: '2.2rem', lineHeight: 1.1 }}>
-                    {value}
-                </Typography>
-            </Box>
-            <Box
-                sx={{
-                    width: 52,
-                    height: 52,
-                    borderRadius: '14px',
-                    background: gradient,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}
-            >
-                {icon}
-            </Box>
-        </Box>
-        {subLabel && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-                <TrendingUpIcon sx={{ fontSize: 16, color: '#14b8a6' }} />
-                <Typography variant="caption" sx={{ color: '#14b8a6', fontWeight: 600 }}>
-                    {subValue}
-                </Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                    {subLabel}
-                </Typography>
-            </Box>
-        )}
-    </Paper>
-);
-
-const MiniStatCard = ({ label, value, icon, color }) => (
-    <Box
-        sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 2,
-            p: 2,
-            borderRadius: '14px',
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.06)',
-            transition: 'all 0.2s ease',
-            '&:hover': { background: 'rgba(255,255,255,0.06)' },
-        }}
-    >
-        <Box
-            sx={{
-                width: 40,
-                height: 40,
-                borderRadius: '10px',
-                background: `rgba(${color}, 0.15)`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-            }}
-        >
+const StatCard = ({ title, value, icon }) => (
+    <Paper elevation={2} sx={{ p: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+            <Typography variant="body2" color="text.secondary">
+                {title}
+            </Typography>
             {icon}
         </Box>
-        <Box>
-            <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.2rem', lineHeight: 1.2 }}>
-                {value}
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                {label}
-            </Typography>
-        </Box>
-    </Box>
+        <Typography variant="h4" sx={{ fontWeight: 700 }}>
+            {value}
+        </Typography>
+    </Paper>
 );
 
 export default function OwnerOverviewPanel() {
@@ -142,8 +48,8 @@ export default function OwnerOverviewPanel() {
 
     if (loading) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-                <CircularProgress sx={{ color: '#14b8a6' }} />
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
+                <CircularProgress />
             </Box>
         );
     }
@@ -158,147 +64,81 @@ export default function OwnerOverviewPanel() {
 
     return (
         <Box>
-            {/* Page Header */}
-            <Box sx={{ mb: 4 }}>
-                <Typography
-                    variant="h4"
-                    sx={{
-                        fontWeight: 800,
-                        background: 'linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%)',
-                        backgroundClip: 'text',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        mb: 0.5,
-                    }}
-                >
-                    {stats.business?.name || 'Business'} Dashboard
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    Here's an overview of your business activity.
-                </Typography>
-            </Box>
+            <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+                {stats.business?.name || 'Business'} Dashboard
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
+                Here's an overview of your business activity.
+            </Typography>
 
-            {/* Main Stats Grid */}
+            {/* Main Stats */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
                 <Grid item xs={12} sm={6} lg={3}>
                     <StatCard
                         title="Today's Appointments"
                         value={stats.todayAppointments}
-                        icon={<TodayIcon sx={{ color: '#fff', fontSize: 26 }} />}
-                        gradient="linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%)"
+                        icon={<CalendarIcon color="primary" />}
                     />
                 </Grid>
                 <Grid item xs={12} sm={6} lg={3}>
                     <StatCard
                         title="Total Employees"
                         value={stats.employees}
-                        icon={<PeopleIcon sx={{ color: '#fff', fontSize: 26 }} />}
-                        gradient="linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)"
+                        icon={<PeopleIcon color="secondary" />}
                     />
                 </Grid>
                 <Grid item xs={12} sm={6} lg={3}>
                     <StatCard
                         title="Active Services"
                         value={stats.services}
-                        icon={<ServicesIcon sx={{ color: '#fff', fontSize: 26 }} />}
-                        gradient="linear-gradient(135deg, #fb923c 0%, #f59e0b 100%)"
+                        icon={<ServicesIcon sx={{ color: '#ffa726' }} />}
                     />
                 </Grid>
                 <Grid item xs={12} sm={6} lg={3}>
                     <StatCard
                         title="Total Revenue"
                         value={`₪${stats.totalRevenue?.toLocaleString() || 0}`}
-                        icon={<MoneyIcon sx={{ color: '#fff', fontSize: 26 }} />}
-                        gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                        subLabel="this week"
-                        subValue={`${stats.weeklyAppointments} bookings`}
+                        icon={<MoneyIcon color="success" />}
                     />
                 </Grid>
             </Grid>
 
-            {/* Appointment Breakdown */}
+            {/* Breakdown */}
             <Grid container spacing={3}>
                 <Grid item xs={12} md={6}>
-                    <Paper
-                        elevation={0}
-                        sx={{
-                            p: 3,
-                            borderRadius: '20px',
-                            background: 'rgba(255,255,255,0.04)',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                        }}
-                    >
-                        <Typography variant="h6" sx={{ fontWeight: 700, mb: 3, fontSize: '1.1rem' }}>
+                    <Paper elevation={2} sx={{ p: 3 }}>
+                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
                             Appointment Status
                         </Typography>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} sm={4}>
-                                <MiniStatCard
-                                    label="Scheduled"
-                                    value={stats.appointments?.scheduled || 0}
-                                    icon={<ScheduleIcon sx={{ color: '#818cf8', fontSize: 20 }} />}
-                                    color="99,102,241"
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <MiniStatCard
-                                    label="Completed"
-                                    value={stats.appointments?.completed || 0}
-                                    icon={<CheckIcon sx={{ color: '#14b8a6', fontSize: 20 }} />}
-                                    color="20,184,166"
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <MiniStatCard
-                                    label="Cancelled"
-                                    value={stats.appointments?.cancelled || 0}
-                                    icon={<CancelIcon sx={{ color: '#f43f5e', fontSize: 20 }} />}
-                                    color="244,63,94"
-                                />
-                            </Grid>
-                        </Grid>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            <Typography variant="body2">
+                                Scheduled: <strong>{stats.appointments?.scheduled || 0}</strong>
+                            </Typography>
+                            <Typography variant="body2">
+                                Completed: <strong>{stats.appointments?.completed || 0}</strong>
+                            </Typography>
+                            <Typography variant="body2">
+                                Cancelled: <strong>{stats.appointments?.cancelled || 0}</strong>
+                            </Typography>
+                        </Box>
                     </Paper>
                 </Grid>
-
                 <Grid item xs={12} md={6}>
-                    <Paper
-                        elevation={0}
-                        sx={{
-                            p: 3,
-                            borderRadius: '20px',
-                            background: 'rgba(255,255,255,0.04)',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                        }}
-                    >
-                        <Typography variant="h6" sx={{ fontWeight: 700, mb: 3, fontSize: '1.1rem' }}>
+                    <Paper elevation={2} sx={{ p: 3 }}>
+                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
                             Quick Summary
                         </Typography>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} sm={4}>
-                                <MiniStatCard
-                                    label="Total Bookings"
-                                    value={stats.appointments?.total || 0}
-                                    icon={<CalendarIcon sx={{ color: '#06b6d4', fontSize: 20 }} />}
-                                    color="6,182,212"
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <MiniStatCard
-                                    label="This Week"
-                                    value={stats.weeklyAppointments || 0}
-                                    icon={<TrendingUpIcon sx={{ color: '#fb923c', fontSize: 20 }} />}
-                                    color="251,146,60"
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <MiniStatCard
-                                    label="Completion Rate"
-                                    value={stats.appointments?.total > 0 ? `${Math.round((stats.appointments.completed / stats.appointments.total) * 100)}%` : '—'}
-                                    icon={<CheckIcon sx={{ color: '#22c55e', fontSize: 20 }} />}
-                                    color="34,197,94"
-                                />
-                            </Grid>
-                        </Grid>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            <Typography variant="body2">
+                                Total Bookings: <strong>{stats.appointments?.total || 0}</strong>
+                            </Typography>
+                            <Typography variant="body2">
+                                This Week: <strong>{stats.weeklyAppointments || 0}</strong>
+                            </Typography>
+                            <Typography variant="body2">
+                                Completion Rate: <strong>{stats.appointments?.total > 0 ? `${Math.round((stats.appointments.completed / stats.appointments.total) * 100)}%` : '—'}</strong>
+                            </Typography>
+                        </Box>
                     </Paper>
                 </Grid>
             </Grid>

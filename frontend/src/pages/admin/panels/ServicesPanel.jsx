@@ -149,7 +149,7 @@ export default function ServicesPanel() {
             {/* Header */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
                 <Box>
-                    <Typography variant="h4" sx={{ fontWeight: 800, background: 'linear-gradient(135deg, #667eea 0%, #f093fb 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', mb: 0.5 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5 }}>
                         Service Management
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -160,14 +160,6 @@ export default function ServicesPanel() {
                     variant="contained"
                     startIcon={<AddIcon />}
                     onClick={() => handleOpenDialog()}
-                    sx={{
-                        borderRadius: '12px',
-                        px: 3,
-                        py: 1.2,
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        fontWeight: 600,
-                        '&:hover': { background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)' },
-                    }}
                 >
                     Add Service
                 </Button>
@@ -239,10 +231,7 @@ export default function ServicesPanel() {
                             filtered.map((s) => (
                                 <TableRow key={s._id} sx={{ '&:hover': { background: 'rgba(255,255,255,0.03)' }, '& td': { borderBottomColor: 'rgba(255,255,255,0.05)' } }}>
                                     <TableCell>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                            <Box sx={{ width: 36, height: 36, borderRadius: '10px', background: 'linear-gradient(135deg, #fb923c 0%, #f59e0b 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <ServicesIcon sx={{ color: '#fff', fontSize: 18 }} />
-                                            </Box>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                             <Box>
                                                 <Typography sx={{ fontWeight: 600 }}>{s.name}</Typography>
                                                 {s.description && (
@@ -281,7 +270,7 @@ export default function ServicesPanel() {
             </TableContainer>
 
             {/* Create/Edit Dialog */}
-            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: '20px', background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)' } }}>
+            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ fontWeight: 700, pb: 1 }}>
                     {editingService ? 'Edit Service' : 'Create New Service'}
                 </DialogTitle>
@@ -315,7 +304,7 @@ export default function ServicesPanel() {
                         variant="contained"
                         onClick={handleSave}
                         disabled={!formData.business || !formData.name || !formData.durationMinutes || !formData.price}
-                        sx={{ borderRadius: '12px', px: 3, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', '&:hover': { background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)' } }}
+                        sx={{ borderRadius: '12px', px: 3 }}
                     >
                         {editingService ? 'Save Changes' : 'Create'}
                     </Button>

@@ -144,25 +144,18 @@ export default function UsersPanel() {
             {/* Header */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
                 <Box>
-                    <Typography variant="h4" sx={{ fontWeight: 800, background: 'linear-gradient(135deg, #667eea 0%, #f093fb 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', mb: 0.5 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5 }}>
                         User Management
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                         Manage all users, register employees, and create business owners.
                     </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 1.5 }}>
+                <Box sx={{ display: 'flex', gap: 1 }}>
                     <Button
                         variant="outlined"
                         startIcon={<PersonAddIcon />}
                         onClick={() => handleOpenDialog('employee')}
-                        sx={{
-                            borderRadius: '12px',
-                            px: 2.5,
-                            borderColor: 'rgba(99,102,241,0.5)',
-                            color: '#818cf8',
-                            '&:hover': { borderColor: '#667eea', background: 'rgba(99,102,241,0.1)' },
-                        }}
                     >
                         Add Employee
                     </Button>
@@ -170,12 +163,6 @@ export default function UsersPanel() {
                         variant="contained"
                         startIcon={<PersonAddIcon />}
                         onClick={() => handleOpenDialog('business')}
-                        sx={{
-                            borderRadius: '12px',
-                            px: 2.5,
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            '&:hover': { background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)' },
-                        }}
                     >
                         Add Business Owner
                     </Button>
@@ -189,16 +176,7 @@ export default function UsersPanel() {
                     size="small"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    InputProps={{
-                        startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                    }}
-                    sx={{
-                        minWidth: 300,
-                        '& .MuiOutlinedInput-root': {
-                            borderRadius: '12px',
-                            background: 'rgba(255,255,255,0.04)',
-                        },
-                    }}
+                    sx={{ minWidth: 300 }}
                 />
                 <Tabs
                     value={roleFilter}
@@ -318,7 +296,7 @@ export default function UsersPanel() {
             </TableContainer>
 
             {/* Register Dialog */}
-            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: '20px', background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)' } }}>
+            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ fontWeight: 700, pb: 1 }}>
                     {dialogType === 'employee' ? 'Register New Employee' : 'Register Business Owner'}
                 </DialogTitle>
@@ -348,7 +326,6 @@ export default function UsersPanel() {
                         variant="contained"
                         onClick={handleRegister}
                         disabled={!formData.name || !formData.email || !formData.password || !formData.businessId}
-                        sx={{ borderRadius: '12px', px: 3, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', '&:hover': { background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)' } }}
                     >
                         Register
                     </Button>

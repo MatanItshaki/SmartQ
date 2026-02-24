@@ -92,7 +92,7 @@ export default function OwnerAppointmentsPanel() {
         <Box>
             {/* Header */}
             <Box sx={{ mb: 4 }}>
-                <Typography variant="h4" sx={{ fontWeight: 800, background: 'linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', mb: 0.5 }}>
+                <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5 }}>
                     Appointments
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary' }}>
