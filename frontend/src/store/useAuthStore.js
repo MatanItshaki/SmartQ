@@ -13,14 +13,14 @@ const useAuthStore = create((set) => ({
     try {
       const response = await authAPI.login({ email, password });
       const { token, user } = response.data;
-      
+
       localStorage.setItem('token', token);
       set({ user, token, isAuthenticated: true, isLoading: false });
       return true;
     } catch (error) {
-      set({ 
-        isLoading: false, 
-        error: error.response?.data?.message || 'Login failed' 
+      set({
+        isLoading: false,
+        error: error.response?.data?.message || 'Login failed'
       });
       return false;
     }
@@ -31,14 +31,14 @@ const useAuthStore = create((set) => ({
     try {
       const response = await authAPI.register(userData);
       const { token, user } = response.data;
-      
+
       localStorage.setItem('token', token);
       set({ user, token, isAuthenticated: true, isLoading: false });
       return true;
     } catch (error) {
-      set({ 
-        isLoading: false, 
-        error: error.response?.data?.message || 'Registration failed' 
+      set({
+        isLoading: false,
+        error: error.response?.data?.message || 'Registration failed'
       });
       return false;
     }
@@ -56,11 +56,11 @@ const useAuthStore = create((set) => ({
     set({ isLoading: true });
     try {
       const response = await authAPI.getMe();
-      set({ user: response.data, isAuthenticated: true, isLoading: false });
+      set({ user: response.data.user || response.data, isAuthenticated: true, isLoading: false });
     } catch (error) {
-       console.error("Auth check failed:", error);
-       localStorage.removeItem('token');
-       set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+      console.error("Auth check failed:", error);
+      localStorage.removeItem('token');
+      set({ user: null, token: null, isAuthenticated: false, isLoading: false });
     }
   },
 }));

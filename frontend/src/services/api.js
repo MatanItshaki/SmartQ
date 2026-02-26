@@ -48,13 +48,68 @@ export const businessAPI = {
 };
 
 export const serviceAPI = {
-  getByBusiness: (businessId) => api.get(`/services`, { params: { businessId } }),
+  getByBusiness: (businessId) => api.get(`/services`, { params: { business: businessId } }),
 };
 
 export const appointmentAPI = {
   book: (appointmentData) => api.post('/appointments', appointmentData),
   getMyAppointments: () => api.get('/appointments/me'),
   cancel: (id) => api.patch(`/appointments/${id}/status`, { status: "cancelled" }),
+};
+
+// Admin-specific API endpoints
+export const adminAPI = {
+  // Dashboard stats
+  getStats: () => api.get('/admin/stats'),
+
+  // User management
+  getAllUsers: (role) => api.get('/admin/users', { params: role ? { role } : {} }),
+  getUserById: (id) => api.get(`/admin/users/${id}`),
+  toggleUserStatus: (id) => api.patch(`/admin/users/${id}/toggle-status`),
+  deleteUser: (id) => api.delete(`/admin/users/${id}`),
+
+  // Business management (already exists via businessAPI but admin-specific routes)
+  createBusiness: (data) => api.post('/business', data),
+  updateBusiness: (id, data) => api.patch(`/business/${id}`, data),
+  deleteBusiness: (id) => api.delete(`/business/${id}`),
+
+  // Service management
+  createService: (data) => api.post('/services', data),
+  updateService: (id, data) => api.put(`/services/${id}`, data),
+  deleteService: (id) => api.delete(`/services/${id}`),
+
+  // Appointment management
+  getAllAppointments: (params) => api.get('/admin/appointments', { params }),
+  updateAppointmentStatus: (id, status) => api.patch(`/appointments/${id}/status`, { status }),
+  deleteAppointment: (id) => api.delete(`/appointments/${id}`),
+
+  // Employee / Business Owner registration
+  registerEmployee: (data) => api.post('/auth/register-employee', data),
+  registerBusinessOwner: (data) => api.post('/auth/register-business', data),
+};
+
+// Business Owner API endpoints
+export const ownerAPI = {
+  // Dashboard stats
+  getStats: () => api.get('/owner/stats'),
+
+  // Business info
+  getMyBusiness: () => api.get('/owner/my-business'),
+  updateMyBusiness: (data) => api.patch('/owner/my-business', data),
+
+  // Employees
+  getEmployees: () => api.get('/owner/employees'),
+  removeEmployee: (id) => api.delete(`/owner/employees/${id}`),
+
+  // Services
+  getServices: () => api.get('/owner/services'),
+  createService: (data) => api.post('/owner/services', data),
+  updateService: (id, data) => api.put(`/owner/services/${id}`, data),
+  deleteService: (id) => api.delete(`/owner/services/${id}`),
+
+  // Appointments
+  getAppointments: (params) => api.get('/owner/appointments', { params }),
+  updateAppointmentStatus: (id, status) => api.patch(`/owner/appointments/${id}/status`, { status }),
 };
 
 export default api;

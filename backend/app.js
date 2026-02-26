@@ -7,6 +7,8 @@ import serviceRoutes from "./src/routes/serviceRoutes.js";
 import appointmentRoutes from "./src/routes/appointmentRoutes.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import clientRoutes from "./src/routes/clientRoutes.js";
+import adminRoutes from "./src/routes/adminRoutes.js";
+import businessOwnerRoutes from "./src/routes/businessOwnerRoutes.js";
 
 import errorMiddleware from "./src/middleware/errorMiddleware.js";
 
@@ -27,6 +29,8 @@ app.use("/api/services", serviceRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/clients", clientRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/owner", businessOwnerRoutes);
 
 // 404
 app.use((req, res) => {
